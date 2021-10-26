@@ -66,6 +66,20 @@
 //
 //===========================================================================
 
+//===========================================================================
+//============================= Longer 3D Printer ============================
+//===========================================================================
+
+// LGT(longer 3D Technology) definition
+#define LGT // comment to remove all code snippets from LGT(Longer 3D Technology)
+
+#if ENABLED(LGT)
+  //  #define LGT_LCD_TFT    // LCD 2.8 inch MCU TFT touch screen
+  #define LGT_LCD_DW    // DWIN 4.3 inch LCD serial touch screen
+#endif
+
+#define LK4X
+
 // @section info
 
 // Author info of this build printed to the host during boot and M115
@@ -495,7 +509,7 @@
 #define TEMP_SENSOR_5 0
 #define TEMP_SENSOR_6 0
 #define TEMP_SENSOR_7 0
-#define TEMP_SENSOR_BED 0
+#define TEMP_SENSOR_BED 1
 #define TEMP_SENSOR_PROBE 0
 #define TEMP_SENSOR_CHAMBER 0
 #define TEMP_SENSOR_COOLER 0
@@ -601,9 +615,9 @@
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
   #else
-    #define DEFAULT_Kp  22.20
-    #define DEFAULT_Ki   1.08
-    #define DEFAULT_Kd 114.00
+    #define DEFAULT_Kp  17.22
+    #define DEFAULT_Ki   1.00
+    #define DEFAULT_Kd  74.22
   #endif
 #endif // PIDTEMP
 
@@ -624,7 +638,7 @@
  * heater. If your configuration is significantly different than this and you don't understand
  * the issues involved, don't use bed PID until someone else verifies that your hardware works.
  */
-//#define PIDTEMPBED
+#define PIDTEMPBED
 
 //#define BED_LIMIT_SWITCHING
 
@@ -642,9 +656,16 @@
 
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
-  #define DEFAULT_bedKp 10.00
-  #define DEFAULT_bedKi .023
-  #define DEFAULT_bedKd 305.4
+  #if ENABLED(LK4X)
+    //From M303 command for Alfawise U30 :
+    #define DEFAULT_bedKp 338.46
+    #define DEFAULT_bedKi 63.96
+    #define DEFAULT_bedKd 447.78
+  #else
+    #define DEFAULT_bedKp 10.00
+    #define DEFAULT_bedKi .023
+    #define DEFAULT_bedKd 305.4
+  #endif
 
   // FIND YOUR OWN: "M303 E-1 C8 S90" to run autotune on the bed at 90 degreesC for 8 cycles.
 #endif // PIDTEMPBED
@@ -739,9 +760,10 @@
 
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
 #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
-#define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
-#define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
-
+#if DISABLED(LK4X)
+  #define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
+  #define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
+#endif
 //===========================================================================
 //============================= Mechanical Settings =========================
 //===========================================================================
@@ -927,14 +949,21 @@
  * Override with M92
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 1600, 400 }
-
+#if ENABLED(LK4X)
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 98 }
+#else
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 1600, 400 }
+#endif
 /**
  * Default Max Feed Rate (mm/s)
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+#if ENABLED(LK4X)
+  #define DEFAULT_MAX_FEEDRATE          { 200, 200, 5, 25 }
+#else
+  #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
+#endif
 
 //#define LIMITED_MAX_FR_EDITING        // Limit edit via M203 or LCD to DEFAULT_MAX_FEEDRATE * 2
 #if ENABLED(LIMITED_MAX_FR_EDITING)
@@ -947,7 +976,11 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#define DEFAULT_MAX_ACCELERATION      { 200, 200, 50, 500 }
+#if ENABLED(LK4X)
+  #define DEFAULT_MAX_ACCELERATION      { 200, 200, 100, 3000 }
+#else
+  #define DEFAULT_MAX_ACCELERATION      { 200, 200, 50, 500 }
+#endif
 
 //#define LIMITED_MAX_ACCEL_EDITING     // Limit edit via M201 or LCD to DEFAULT_MAX_ACCELERATION * 2
 #if ENABLED(LIMITED_MAX_ACCEL_EDITING)
@@ -964,7 +997,11 @@
  */
 #define DEFAULT_ACCELERATION          200    // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  500    // E acceleration for retracts
-#define DEFAULT_TRAVEL_ACCELERATION   500    // X, Y, Z acceleration for travel (non printing) moves
+#if ENABLED(LK4X)
+  #define DEFAULT_TRAVEL_ACCELERATION   200    // X, Y, Z acceleration for travel (non printing) moves
+#else
+  #define DEFAULT_TRAVEL_ACCELERATION   500    // X, Y, Z acceleration for travel (non printing) moves
+#endif
 
 /**
  * Default Jerk limits (mm/s)
@@ -1369,16 +1406,25 @@
 // @section machine
 
 // The size of the printable area
-#define X_BED_SIZE 200
-#define Y_BED_SIZE 200
-
+#if ENABLED(LK4X)
+  #define X_BED_SIZE 220
+  #define Y_BED_SIZE 220  
+#else
+  #define X_BED_SIZE 200
+  #define Y_BED_SIZE 200
+#endif
 // Travel limits (mm) after homing, corresponding to endstop positions.
 #define X_MIN_POS 0
 #define Y_MIN_POS 0
 #define Z_MIN_POS 0
 #define X_MAX_POS X_BED_SIZE
 #define Y_MAX_POS Y_BED_SIZE
-#define Z_MAX_POS 200
+
+#if ENABLED(LK4X)
+  #define Z_MAX_POS 250
+#else
+  #define Z_MAX_POS 200
+#endif
 //#define I_MIN_POS 0
 //#define I_MAX_POS 50
 //#define J_MIN_POS 0
@@ -1434,13 +1480,13 @@
  * RAMPS-based boards use SERVO3_PIN for the first runout sensor.
  * For other boards you may need to define FIL_RUNOUT_PIN, FIL_RUNOUT2_PIN, etc.
  */
-//#define FILAMENT_RUNOUT_SENSOR
+#define FILAMENT_RUNOUT_SENSOR
 #if ENABLED(FILAMENT_RUNOUT_SENSOR)
   #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
 
-  #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
-  #define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
+  #define FIL_RUNOUT_STATE     true        // Pin state indicating that filament is NOT present.
+  // #define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
   //#define FIL_RUNOUT_PULLDOWN           // Use internal pulldown for filament runout pins.
   //#define WATCH_ALL_RUNOUT_SENSORS      // Execute runout script on any triggering sensor, not only for the active extruder.
                                           // This is automatically enabled for MIXING_EXTRUDERs.
@@ -1481,8 +1527,11 @@
   // Commands to execute on filament runout.
   // With multiple runout sensors use the %c placeholder for the current tool in commands (e.g., "M600 T%c")
   // NOTE: After 'M412 H1' the host handles filament runout and this script does not apply.
-  #define FILAMENT_RUNOUT_SCRIPT "M600"
-
+  #if ENABLED(LGT_LCD_DW)
+    #define FILAMENT_RUNOUT_SCRIPT "M25\nM2003"
+  #else
+    #define FILAMENT_RUNOUT_SCRIPT "M600"
+  #endif
   // After a runout is detected, continue printing this length of filament
   // before executing the runout script. Useful for a sensor at the end of
   // a feed tube. Requires 4 bytes SRAM per sensor, plus 4 bytes overhead.
@@ -1745,7 +1794,11 @@
 #endif
 
 // Homing speeds (mm/min)
-#define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (4*60) }
+#if ENABLED(LK4X)
+  #define HOMING_FEEDRATE_MM_M { (40*60), (40*60), (4*60) }
+#else
+  #define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (4*60) }
+#endif
 
 // Validate that endstops are triggered on homing moves
 #define VALIDATE_HOMING_ENDSTOPS
@@ -1856,14 +1909,14 @@
 // Preheat Constants - Up to 5 are supported without changes
 //
 #define PREHEAT_1_LABEL       "PLA"
-#define PREHEAT_1_TEMP_HOTEND 180
-#define PREHEAT_1_TEMP_BED     70
+#define PREHEAT_1_TEMP_HOTEND 200
+#define PREHEAT_1_TEMP_BED     60
 #define PREHEAT_1_TEMP_CHAMBER 35
 #define PREHEAT_1_FAN_SPEED     0 // Value from 0 to 255
 
 #define PREHEAT_2_LABEL       "ABS"
-#define PREHEAT_2_TEMP_HOTEND 240
-#define PREHEAT_2_TEMP_BED    110
+#define PREHEAT_2_TEMP_HOTEND 230
+#define PREHEAT_2_TEMP_BED    80
 #define PREHEAT_2_TEMP_CHAMBER 35
 #define PREHEAT_2_FAN_SPEED     0 // Value from 0 to 255
 
@@ -1878,7 +1931,7 @@
  *    P1  Raise the nozzle always to Z-park height.
  *    P2  Raise the nozzle by Z-park amount, limited to Z_MAX_POS.
  */
-//#define NOZZLE_PARK_FEATURE
+#define NOZZLE_PARK_FEATURE
 
 #if ENABLED(NOZZLE_PARK_FEATURE)
   // Specify a park position as { X, Y, Z_raise }
@@ -2627,6 +2680,10 @@
   //#define EXTUI_LOCAL_BEEPER // Enables use of local Beeper pin with external display
 #endif
 
+#if ENABLED(LGT_LCD_DW)
+  #define LCD_SERIAL_PORT 3
+  #define LCD_BAUDRATE 115200
+#endif
 //=============================================================================
 //=============================== Graphical TFTs ==============================
 //=============================================================================
@@ -2640,7 +2697,7 @@
 // 480x320, 3.5", SPI Display From MKS
 // Normally used in MKS Robin Nano V2
 //
-#define MKS_TS35_V2_0
+// #define MKS_TS35_V2_0
 
 //
 // 320x240, 2.4", FSMC Display From MKS
@@ -2738,7 +2795,7 @@
  */
 //#define TFT_CLASSIC_UI
 // #define TFT_COLOR_UI
-#define TFT_LVGL_UI
+// #define TFT_LVGL_UI
 
 #if ENABLED(TFT_LVGL_UI)
   //#define MKS_WIFI_MODULE  // MKS WiFi module
@@ -2782,7 +2839,7 @@
 //
 // Touch Screen Settings
 //
-#define TOUCH_SCREEN
+// #define TOUCH_SCREEN
 #if ENABLED(TOUCH_SCREEN)
   #define BUTTON_DELAY_EDIT  50 // (ms) Button repeat delay for edit screens
   #define BUTTON_DELAY_MENU 250 // (ms) Button repeat delay for menus

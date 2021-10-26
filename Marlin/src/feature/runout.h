@@ -38,6 +38,10 @@
   #include "../lcd/extui/ui_api.h"
 #endif
 
+#if ENABLED(LGT_LCD_DW)
+  #include "../lcd/lgtdwlcd.h"
+#endif
+
 //#define FILAMENT_RUNOUT_SENSOR_DEBUG
 #ifndef FILAMENT_RUNOUT_THRESHOLD
   #define FILAMENT_RUNOUT_THRESHOLD 5
@@ -115,7 +119,11 @@ class TFilamentMonitor : public FilamentMonitorBase {
 
     // Give the response a chance to update its counter.
     static inline void run() {
-      if (enabled && !filament_ran_out && (printingIsActive() || did_pause_print)) {
+      if (enabled && !filament_ran_out && (printingIsActive() || did_pause_print)
+        #if ENABLED(LGT_LCD_DW)
+        	&& LGT_is_printing
+        #endif
+      ) {
         TERN_(HAS_FILAMENT_RUNOUT_DISTANCE, cli()); // Prevent RunoutResponseDelayed::block_completed from accumulating here
         response.run();
         sensor.run();

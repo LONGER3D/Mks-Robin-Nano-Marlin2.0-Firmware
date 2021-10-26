@@ -240,6 +240,10 @@
   #include "feature/power.h"
 #endif
 
+#if ENABLED(LGT_LCD_DW)
+  #include "lcd/lgtdwlcd.h"
+#endif
+
 PGMSTR(M112_KILL_STR, "M112 Shutdown");
 
 MarlinState marlin_state = MF_INITIALIZING;
@@ -368,6 +372,11 @@ void startOrResumeJob() {
       marlin_state = MF_RUNNING;              // Signal to stop trying
       TERN_(PASSWORD_AFTER_SD_PRINT_END, password.lock_machine());
       TERN_(DGUS_LCD_UI_MKS, ScreenHandler.SDPrintingFinished());
+
+      #if ENABLED(LGT_LCD_DW)
+        lgtLcdDw.goFinishPage();
+      #endif
+
     }
   }
 
@@ -843,6 +852,10 @@ void idle(bool no_stepper_sleep/*=false*/) {
   // Update the LVGL interface
   TERN_(HAS_TFT_LVGL_UI, LV_TASK_HANDLER());
 
+  #if ENABLED(LGT_LCD_DW)
+    lgtLcdDw.LGT_Main_Function();
+  #endif
+
   IDLE_DONE:
   TERN_(MARLIN_DEV_MODE, idle_depth--);
   return;
@@ -864,6 +877,10 @@ void kill(PGM_P const lcd_error/*=nullptr*/, PGM_P const lcd_component/*=nullptr
     ui.kill_screen(lcd_error ?: GET_TEXT(MSG_KILLED), lcd_component ?: NUL_STR);
   #else
     UNUSED(lcd_error); UNUSED(lcd_component);
+  #endif
+
+  #if ENABLED(LGT_LCD_DW)
+    lgtLcdDw.LGT_Print_Cause_Of_Kill(lcd_error ?: GET_TEXT(MSG_KILLED), lcd_component ?: NUL_STR);
   #endif
 
   TERN_(HAS_TFT_LVGL_UI, lv_draw_error_message(lcd_error));
@@ -1592,6 +1609,15 @@ void setup() {
     ui.check_touch_calibration();
   #endif
 
+  #if ENABLED(LGT_LCD_DW)
+    WRITE(FAN_PIN, LOW);  // turn off fan
+    lgtLcdDw.begin();
+  #endif
+  // LCD_SERIAL.begin(LCD_BAUDRATE);
+  // serial_connect_timeout = millis() + 1000UL;
+  // while (!LCD_SERIAL.connected() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
+  // LCD_SERIAL.println("hello");
+
   marlin_state = MF_RUNNING;
 
   SETUP_LOG("setup() completed.");
@@ -1612,6 +1638,11 @@ void setup() {
  */
 void loop() {
   do {
+
+    #if ENABLED(LGT_LCD_DW)
+      lgtLcdDw.LGT_LCD_startup_settings();
+    #endif
+
     idle();
 
     #if ENABLED(SDSUPPORT)

@@ -37,6 +37,11 @@
   #include "../libs/autoreport.h"
 #endif
 
+#if ENABLED(LGT_LCD_DW)
+  #include "../lcd/lgtdwlcd.h"
+  extern bool tartemp_flag;
+#endif
+
 #ifndef SOFT_PWM_SCALE
   #define SOFT_PWM_SCALE 0
 #endif
@@ -682,6 +687,10 @@ class Temperature {
     #if HAS_HOTEND
 
       static void setTargetHotend(const celsius_t celsius, const uint8_t E_NAME) {
+        #ifdef LGT_LCD_DW
+          tartemp_flag = true;
+        #endif // LGT_MAC
+
         const uint8_t ee = HOTEND_INDEX;
         #if MILLISECONDS_PREHEAT_TIME > 0
           if (celsius == 0)
@@ -745,6 +754,9 @@ class Temperature {
       static inline void start_watching_bed() { TERN_(WATCH_BED, watch_bed.restart(degBed(), degTargetBed())); }
 
       static void setTargetBed(const celsius_t celsius) {
+        #ifdef LGT_LCD_DW
+          tartemp_flag = true;
+        #endif // LGT_MAC
         TERN_(AUTO_POWER_CONTROL, if (celsius) powerManager.power_on());
         temp_bed.target = _MIN(celsius, BED_MAX_TARGET);
         start_watching_bed();

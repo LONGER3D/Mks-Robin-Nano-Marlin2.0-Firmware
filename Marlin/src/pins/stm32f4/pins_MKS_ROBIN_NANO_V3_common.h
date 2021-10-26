@@ -145,6 +145,10 @@
   #define MT_DET_PIN_STATE                  LOW
 #endif
 
+#if defined(LK4X)
+  #define MT_DET_1_PIN                      PA4
+#endif
+
 #ifndef FIL_RUNOUT_PIN
   #define FIL_RUNOUT_PIN            MT_DET_1_PIN
 #endif

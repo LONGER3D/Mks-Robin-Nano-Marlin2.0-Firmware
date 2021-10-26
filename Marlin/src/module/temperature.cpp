@@ -809,6 +809,11 @@ volatile bool Temperature::raw_temps_ready = false;
 
       // Run UI update
       TERN(HAS_DWIN_E3V2_BASIC, DWIN_Update(), ui.update());
+
+      #if ENABLED(LGT_LCD_DW)
+        lgtLcdDw.LGT_Main_Function();
+      #endif
+
     }
     wait_for_heatup = false;
 
@@ -2271,7 +2276,11 @@ void Temperature::init() {
   #endif
 
   #if HAS_FAN0
+    #if ENABLED(LGT_LCD_DW)
+      OUT_WRITE(FAN_PIN, HIGH); // turn on fan
+    #else
     INIT_FAN_PIN(FAN_PIN);
+    #endif
   #endif
   #if HAS_FAN1
     INIT_FAN_PIN(FAN1_PIN);

@@ -99,6 +99,13 @@ PGM_P GCodeQueue::injected_commands_P; // = nullptr
  */
 char GCodeQueue::injected_commands[64]; // = { 0 }
 
+#if ENABLED(LGT_LCD_DW)
+/**
+ * Clean injected command
+ */
+void GCodeQueue::clearInject() { injected_commands_P = nullptr; }
+#endif
+
 void GCodeQueue::RingBuffer::commit_command(bool skip_ok
   OPTARG(HAS_MULTI_SERIAL, serial_index_t serial_ind/*=-1*/)
 ) {

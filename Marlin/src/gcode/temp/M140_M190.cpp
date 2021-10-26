@@ -83,6 +83,11 @@ void GcodeSuite::M140_M190(const bool isM190) {
 
   thermalManager.setTargetBed(temp);
 
+  #if ENABLED(LGT_LCD_DW)
+    if(isM190)
+      lgtLcdDw.hideButtonsBeforeHeating();
+  #endif
+
   ui.set_status_P(thermalManager.isHeatingBed() ? GET_TEXT(MSG_BED_HEATING) : GET_TEXT(MSG_BED_COOLING));
 
   // with PRINTJOB_TIMER_AUTOSTART, M190 can start the timer, and M140 can stop it

@@ -61,6 +61,10 @@ uint32_t PrintJobRecovery::cmd_sdpos, // = 0
 #define DEBUG_OUT ENABLED(DEBUG_POWER_LOSS_RECOVERY)
 #include "../core/debug_out.h"
 
+#if ENABLED(LGT_LCD_DW)
+  #include "../lcd/lgtdwlcd.h"
+#endif
+
 PrintJobRecovery recovery;
 
 #ifndef POWER_LOSS_PURGE_LEN
@@ -106,10 +110,19 @@ void PrintJobRecovery::changed() {
  */
 void PrintJobRecovery::check() {
   //if (!card.isMounted()) card.mount();
+  #if ENABLED(LGT_LCD_DW)
+    if (!card.isMounted()) card.mount();
+  #endif
+
   if (card.isMounted()) {
     load();
     if (!valid()) return cancel();
     queue.inject_P(PSTR("M1000S"));
+
+    #if ENABLED(LGT_LCD_DW)
+      check_recovery = true;
+    #endif
+
   }
 }
 

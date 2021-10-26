@@ -47,6 +47,10 @@
 
 #include "../../MarlinCore.h" // for startOrResumeJob
 
+#if ENABLED(LGT_LCD_DW)
+  #include "../../lcd/lgtdwlcd.h"
+#endif //ENABLED(LGT_LCD_DW)
+
 /**
  * M24: Start or Resume SD Print
  */
@@ -120,6 +124,10 @@ void GcodeSuite::M25() {
       #ifdef ACTION_ON_PAUSE
         host_action_pause();
       #endif
+    #endif
+
+    #if ENABLED(LGT_LCD_DW)
+      lgtLcdDw.pausePrint();
     #endif
 
   #endif

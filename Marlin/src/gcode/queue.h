@@ -136,6 +136,11 @@ public:
     strncpy(injected_commands, gcode, sizeof(injected_commands) - 1);
   }
 
+  #if ENABLED(LGT_LCD_DW)
+    static void clearInject();
+  #endif
+
+
   /**
    * Enqueue and return only when commands are actually enqueued
    */

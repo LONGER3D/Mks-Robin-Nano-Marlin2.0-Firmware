@@ -59,6 +59,10 @@
 #include "../core/debug_out.h"
 #include "../libs/hex_print.h"
 
+#if ENABLED(LGT_LCD_DW)
+  #include "../lcd/lgtdwlcd.h"
+#endif
+
 // extern
 
 PGMSTR(M21_STR, "M21");
@@ -505,7 +509,7 @@ void CardReader::manage_media() {
       TERN_(SDCARD_EEPROM_EMULATION, settings.first_load());
       if (old_stat == 2) {            // First mount?
         DEBUG_ECHOLNPGM("First mount.");
-        #if ENABLED(POWER_LOSS_RECOVERY)
+        #if ENABLED(POWER_LOSS_RECOVERY) && DISABLED(LGT_LCD_DW) 
           recovery.check();           // Check for PLR file. (If not there then call autofile_begin)
         #elif DISABLED(NO_SD_AUTOSTART)
           autofile_begin();           // Look for auto0.g on the next loop
@@ -1291,8 +1295,14 @@ void CardReader::fileHasFinished() {
 
   endFilePrintNow(TERN_(SD_RESORT, true));
 
+  #if ENABLED(LGT_LCD_DW)
+    lgtLcdDw.saveFinishTime();
+  #endif
+
   flag.sdprintdone = true;        // Stop getting bytes from the SD card
   marlin_state = MF_SD_COMPLETE;  // Tell Marlin to enqueue M1001 soon
+
+
 }
 
 #if ENABLED(AUTO_REPORT_SD_STATUS)
