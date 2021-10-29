@@ -1616,12 +1616,13 @@ FUNCTION:	Checking sdcard and updating file list on screen
 void LGT_SCR_DW::LGT_SDCard_Status_Update()
 {
 #if  ENABLED(SDSUPPORT) && PIN_EXISTS(SD_DETECT)
-    const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
+    const uint8_t sd_status = (READ(SD_DETECT_PIN) == HIGH);//(uint8_t)IS_SD_INSERTED();
 	if (!sd_status)
 	{
 		if (sd_init_flag ==true)
 		{
 			sd_init_flag = false;
+			card.changeMedia(&card.media_driver_sdcard);
 			if (!card.isMounted())
 			{
 				card.mount();
