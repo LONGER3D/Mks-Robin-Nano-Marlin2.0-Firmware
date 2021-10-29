@@ -103,7 +103,7 @@ char GCodeQueue::injected_commands[64]; // = { 0 }
 /**
  * Clean injected command
  */
-void GCodeQueue::clearInject() { injected_commands_P = nullptr; }
+void GCodeQueue::clearInject() { injected_commands_P = nullptr; /* ZERO(injected_commands); */}
 #endif
 
 void GCodeQueue::RingBuffer::commit_command(bool skip_ok

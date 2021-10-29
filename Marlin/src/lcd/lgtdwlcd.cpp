@@ -1090,15 +1090,13 @@ void LGT_SCR_DW::processButton()
 				else
 				{
 					memset(cmd_E, 0, sizeof(cmd_E));
-					sprintf_P(cmd_E, PSTR("M109 S%i"), filament_temp);
+					sprintf_P(cmd_E, PSTR("M109 S%i\nM2004"), filament_temp);
 					if (menu_type == eMENU_UTILI_FILA) {
 						LGT_Change_Page(ID_DIALOG_UTILI_FILA_WAIT);
-						queue.enqueue_one_now(cmd_E);
-						queue.enqueue_one_P(PSTR("M2004"));
+						queue.enqueue_now_P(cmd_E);
 					} else if (menu_type == eMENU_HOME_FILA) {
 						LGT_Change_Page(ID_DIALOG_PRINT_FILA_WAIT);
-						queue.enqueue_one_now(cmd_E);
-						queue.enqueue_one_P(PSTR("M2004"));
+						queue.inject_P(cmd_E);
 					}
 				}
 			break;
@@ -1114,14 +1112,13 @@ void LGT_SCR_DW::processButton()
 			else
 			{
 				memset(cmd_E, 0, sizeof(cmd_E));
-				LGT_Change_Page(ID_DIALOG_UTILI_FILA_WAIT);
-				sprintf_P(cmd_E, PSTR("M109 S%i"), filament_temp);
+				sprintf_P(cmd_E, PSTR("M109 S%i\nM2005"), filament_temp);
 				if (menu_type == eMENU_UTILI_FILA) {
-					queue.enqueue_one_now(cmd_E);
-					queue.enqueue_one_P(PSTR("M2005"));
+					LGT_Change_Page(ID_DIALOG_UTILI_FILA_WAIT);
+					queue.enqueue_now_P(cmd_E);
 				} else if (menu_type == eMENU_HOME_FILA) {
-					queue.enqueue_one_now(cmd_E);
-					queue.enqueue_one_P(PSTR("M2005"));
+					LGT_Change_Page(ID_DIALOG_PRINT_FILA_WAIT);
+					queue.inject_P(cmd_E);
 				}	
 			}
 			break;

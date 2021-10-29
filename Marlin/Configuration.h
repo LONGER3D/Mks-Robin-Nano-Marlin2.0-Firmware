@@ -739,7 +739,12 @@
  * Note: For Bowden Extruders make this large enough to allow load/unload.
  */
 #define PREVENT_LENGTHY_EXTRUDE
-#define EXTRUDE_MAXLENGTH 200
+
+#if ENABLED(LK4X)
+  #define EXTRUDE_MAXLENGTH 600
+#else
+  #define EXTRUDE_MAXLENGTH 200
+#endif
 
 //===========================================================================
 //======================== Thermal Runaway Protection =======================
