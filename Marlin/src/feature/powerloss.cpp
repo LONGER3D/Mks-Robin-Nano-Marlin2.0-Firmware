@@ -121,6 +121,7 @@ void PrintJobRecovery::check() {
 
     #if ENABLED(LGT_LCD_DW)
       check_recovery = true;
+      MYSERIAL1.println("recovery checked");
     #endif
 
   }

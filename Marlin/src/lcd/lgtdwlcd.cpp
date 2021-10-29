@@ -174,6 +174,7 @@ void LGT_SCR_DW::begin()
     MYSERIAL1.begin(115200);
     delay(600); 
     status_type = PRINTER_SETUP;
+	card.changeMedia(&card.media_driver_sdcard);
     #if ENABLED(POWER_LOSS_RECOVERY)
 		recovery.check();
     #endif
@@ -1626,11 +1627,11 @@ void LGT_SCR_DW::LGT_SDCard_Status_Update()
 				delay(2);
 				if (card.isMounted())
 				{
-					#if ENABLED(POWER_LOSS_RECOVERY)
-						recovery.check();
-					#endif
-					if (!check_recovery)
-					{
+					// #if ENABLED(POWER_LOSS_RECOVERY)
+					// 	recovery.check();
+					// #endif
+					// if (!check_recovery)
+					// {
 						if (menu_type == eMENU_FILE)
 						{
 							if (ii_setup == (STARTUP_COUNTER + 1))
@@ -1638,14 +1639,14 @@ void LGT_SCR_DW::LGT_SDCard_Status_Update()
 								LGT_Change_Page(ID_MENU_PRINT_FILES_O);
 							}
 						}
-					}
-					else
-					{
-						return_home = true;
-						check_recovery = false;
-						ENABLE_AXIS_Z();  // lock z moter prevent from drop down
-						LGT_Change_Page(ID_DIALOG_PRINT_RECOVERY);
-					}
+					// }
+					// else
+					// {
+					// 	return_home = true;
+					// 	check_recovery = false;
+					// 	ENABLE_AXIS_Z();  // lock z moter prevent from drop down
+					// 	LGT_Change_Page(ID_DIALOG_PRINT_RECOVERY);
+					// }
 					LGT_Display_Filename();
 				}
 			}
