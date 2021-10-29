@@ -646,6 +646,11 @@ void GCodeQueue::advance() {
     return;
   }
 
+  #if ENABLED(LGT_LCD_DW)
+    if (IS_SD_PAUSED() && !LGT_is_printing)   // prevent from process buffered commands when dw screen is paused
+      return;
+  #endif
+
   #if ENABLED(BUFFER_MONITORING)
     if (command_buffer_empty) {
       command_buffer_empty = false;
@@ -693,7 +698,13 @@ void GCodeQueue::advance() {
   #endif // SDSUPPORT
 
   // The queue may be reset by a command handler or by code invoked by idle() within a handler
+  #if ENABLED(LGT)
+    if (ring_buffer.occupied()) {   // prevent -1(255) error
+  #endif
   ring_buffer.advance_pos(ring_buffer.index_r, -1);
+  #if ENABLED(LGT)
+    }
+  #endif
 }
 
 #if ENABLED(BUFFER_MONITORING)
