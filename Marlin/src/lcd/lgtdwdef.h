@@ -16,7 +16,7 @@
 #define DATA_SIZE 37    //the size of ScreenData and Receive_Cmd
 #define FILE_LIST_NUM  25
 
-#define EEPROM_INDEX 4000
+#define EEPROM_INDEX 5000
 
 //Printer kill reason
 #define E_TEMP_ERROR		"Error 0: abnormal E temp"   //Heating failed

@@ -13,6 +13,14 @@
 #include "../feature/powerloss.h"
 #include "../module/stepper.h"
 
+#ifdef I2C_EEPROM
+	#include "../HAL/shared/eeprom_if.h"
+#endif // I2C_EEPROM
+
+// #if ENABLED(EEPROM_SETTINGS)
+  // #include "../HAL/shared/eeprom_api.h"
+// #endif
+
 // debug define
 #define DEBUG_LGTDWLCD
 #define DEBUG_OUT ENABLED(DEBUG_LGTDWLCD)
@@ -32,8 +40,8 @@
 #define DEBUG_PRINT_P 				DEBUG_ECHO
 #define DEBUG_ECHOPAIR(k, v) 		do {DEBUG_ECHO(k); DEBUG_ECHO(v);} while(0)
 
-#define eeprom_write_dword(x, y) NOOP
-#define eeprom_read_dword(x) 0
+// #define eeprom_write_dword(x, y) NOOP
+// #define eeprom_read_dword(x) 0
 
 #define startFileprint startOrResumeFilePrinting
 
@@ -93,6 +101,36 @@ bool check_recovery = false; // for recovery dialog
 char leveling_sta = 0; // for leveling menu
 
 // #define MYSERIAL1 customizedSerial2//MSerial2
+
+static void eeprom_write_dword (uint32_t *pos, uint32_t value)
+{
+  int size = sizeof(uint32_t);
+  uint8_t *p = (uint8_t *)pos;
+  uint8_t *pValue = (uint8_t *)&value;
+
+  while (size--) {
+      eeprom_write_byte(p, *pValue);
+      p++;
+      pValue++;
+  }
+
+}
+
+static uint32_t eeprom_read_dword (const uint32_t *pos) 
+{
+  int size = sizeof(uint32_t);
+  uint32_t value;
+  uint8_t *pValue = (uint8_t *)&value;
+  uint8_t *p = (uint8_t *)pos;
+
+  while (size--) {
+      *pValue = eeprom_read_byte(p);
+      p++;
+      pValue++;
+  }
+  return value;
+}
+
 
 static void LGT_Line_To_Current(AxisEnum axis) 
 {
@@ -181,6 +219,9 @@ void LGT_SCR_DW::begin()
     DEBUG_PRINT_P(PSTR("dw: begin\n"));
 	lgtLcdDw.readScreenModel();
 	delay(1000); // wait for showing logo
+
+  // DEBUG_ECHOLN(settings.)
+
 }
 
 void LGT_SCR_DW::LGT_LCD_startup_settings()
@@ -465,8 +506,8 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 
 void LGT_SCR_DW::LGT_DW_Setup()
 {
-	#if 0
-		if (eeprom_read_byte((const uint8_t*)(EEPROM_INDEX + 5)) != 0)
+	#if 1
+		if (eeprom_read_byte((uint8_t*)(EEPROM_INDEX + 5)) != 0)
 		{
 			eeprom_write_dword((uint32_t*)EEPROM_INDEX, 0);
 			eeprom_write_byte((uint8_t *)(EEPROM_INDEX + 5), 0);
