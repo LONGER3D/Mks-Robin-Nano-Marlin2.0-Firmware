@@ -193,7 +193,12 @@
 #define ADDR_VAL_PRINT_FILE_SELECT          (0x1550)                                        // 1550
 #define ADDR_TXT_PRINT_FILE_SELECT          (ADDR_VAL_PRINT_FILE_SELECT + LEN_WORD)         // 1552  
 
-#define ADDR_KILL_REASON                     (0x2000) 
+// crash killed
+#define ADDR_KILL_REASON                    (0x2000) 										// 2000
+
+// update
+#define ADDR_TXT_UPDATE_STATUS				(0x2040)										// 2040
+#define ADDR_VAL_UPDATE_PROGRESS			(ADDR_TXT_UPDATE_STATUS + LEN_FILE_NAME)		// 2060
 
 // SP definition
 #define SP_TXT_PRINT_FILE_ITEM_0            (0x6000)                                        // 6000
@@ -286,7 +291,11 @@ enum E_BUTTON_KEY {
 	eBT_PRINT_FILA_LOAD_OK,
 
 	eBT_PRINT_HOME_FILAMENT,		// added for JX scrren
-	eBT_PRINT_TUNE_FILAMENT			// added for JX scrren
+	eBT_PRINT_TUNE_FILAMENT,			// added for JX scrren
+
+	eBT_FILE_USB_DRIVE,
+	eBT_FILE_SD_CARD
+
 };
 
 enum E_MENU_TYPE {

@@ -212,9 +212,9 @@ void LGT_SCR_DW::begin()
     MYSERIAL1.begin(115200);
     delay(600); 
     status_type = PRINTER_SETUP;
-	card.changeMedia(&card.media_driver_sdcard);
+	// card.changeMedia(&card.media_driver_usbFlash);
     #if ENABLED(POWER_LOSS_RECOVERY)
-		recovery.check();
+		// recovery.check();
     #endif
     DEBUG_PRINT_P(PSTR("dw: begin\n"));
 	lgtLcdDw.readScreenModel();
@@ -286,7 +286,7 @@ void LGT_SCR_DW::LGT_Main_Function()
 		if (led_on == true)
 			LGT_Printer_Light_Update();
 	#endif // LK1_PRO
-	LGT_SDCard_Status_Update();
+	// LGT_SDCard_Status_Update();
 }
 
 /*************************************
@@ -1535,6 +1535,13 @@ void LGT_SCR_DW::processButton()
 				LGT_Change_Page(ID_DIALOG_CHANGE_FILA_1);
 			}
 			break;
+		
+		case eBT_FILE_USB_DRIVE:
+			selectUsbDrive();
+			break;
+		case eBT_FILE_SD_CARD:
+			selectSdCard();
+			break;
 
 		default: break;
 	}
@@ -1647,7 +1654,53 @@ void LGT_SCR_DW::LGT_MAC_Send_Filename(uint16_t Addr, uint16_t Serial_Num)
 
 }
 
+void LGT_SCR_DW::clearFileList()
+{
+		// clean file list
+	DEHILIGHT_FILE_NAME();
+	sel_fileid = -1;
+	uint16_t var_addr = ADDR_TXT_PRINT_FILE_ITEM_0;
+	for (int i = 0; i < gcode_num; i++)   //Cleaning filename
+	{
+		LGT_Clean_DW_Display_Data(var_addr);
+		var_addr = var_addr+LEN_FILE_NAME;
+		if (i == 10 || i == 20)
+			LGT_Get_MYSERIAL1_Cmd();
+	}
+	LGT_Clean_DW_Display_Data(ADDR_TXT_PRINT_FILE_SELECT);
+	// card.release();
+	gcode_num = 0;
+}
 
+void LGT_SCR_DW::selectUsbDrive()
+{
+
+	card.changeMedia(&card.media_driver_usbFlash);
+	clearFileList();
+	if (card.isMounted())
+		card.release();
+
+	if (DiskIODriver_USBFlash::isInserted()) {
+
+		card.mount();
+		if (card.isMounted())
+			LGT_Display_Filename();
+	}
+}
+
+void LGT_SCR_DW::selectSdCard()
+{
+	card.changeMedia(&card.media_driver_sdcard);
+	clearFileList();
+	if (card.isMounted())
+		card.release();
+
+	if (READ(SD_DETECT_PIN) == SD_DETECT_STATE) {
+		card.mount();
+		if (card.isMounted())
+			LGT_Display_Filename();
+	}
+}
 
 /*************************************
 FUNCTION:	Checking sdcard and updating file list on screen
@@ -1655,15 +1708,18 @@ FUNCTION:	Checking sdcard and updating file list on screen
 void LGT_SCR_DW::LGT_SDCard_Status_Update()
 {
 #if  ENABLED(SDSUPPORT) && PIN_EXISTS(SD_DETECT)
-    const uint8_t sd_status = (READ(SD_DETECT_PIN) == HIGH);//(uint8_t)IS_SD_INSERTED();
-	if (!sd_status)
+    const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
+	if (sd_status)
 	{
+		// DEBUG_ECHOLN("hello");
 		if (sd_init_flag ==true)
 		{
+			DEBUG_ECHOLN("hello2");
 			sd_init_flag = false;
-			card.changeMedia(&card.media_driver_sdcard);
+			card.changeMedia(&card.media_driver_usbFlash);
 			if (!card.isMounted())
 			{
+				DEBUG_ECHOLN("hello3");
 				card.mount();
 				delay(2);
 				if (card.isMounted())
@@ -1688,6 +1744,8 @@ void LGT_SCR_DW::LGT_SDCard_Status_Update()
 					// 	ENABLE_AXIS_Z();  // lock z moter prevent from drop down
 					// 	LGT_Change_Page(ID_DIALOG_PRINT_RECOVERY);
 					// }
+
+					// list filename
 					LGT_Display_Filename();
 				}
 			}
@@ -1703,6 +1761,8 @@ void LGT_SCR_DW::LGT_SDCard_Status_Update()
 				menu_type = eMENU_HOME;
 				LGT_Change_Page(ID_MENU_HOME);
 			}
+
+			// clean file list
 			DEHILIGHT_FILE_NAME();
 			sel_fileid = -1;
 			uint16_t var_addr = ADDR_TXT_PRINT_FILE_ITEM_0;
@@ -1716,6 +1776,8 @@ void LGT_SCR_DW::LGT_SDCard_Status_Update()
 			LGT_Clean_DW_Display_Data(ADDR_TXT_PRINT_FILE_SELECT);
 			card.release();
 			gcode_num = 0;
+
+
 		}
 		sd_init_flag = true;
 	}

@@ -799,8 +799,9 @@ void idle(bool no_stepper_sleep/*=false*/) {
   #endif
 
   // Handle SD Card insert / remove
-  TERN_(SDSUPPORT, card.manage_media());
-
+  #if DISABLED(LGT_LCD_DW)
+    TERN_(SDSUPPORT, card.manage_media());
+  #endif
   // Handle USB Flash Drive insert / remove
   TERN_(USB_FLASH_DRIVE_SUPPORT, card.diskIODriver()->idle());
 
