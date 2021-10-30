@@ -125,6 +125,7 @@ public:
 	void clearFileList();
 	void selectUsbDrive();
 	void selectSdCard();
+	void checkRecovery();
 
 private:
 	void writeData(uint16_t addr, const uint8_t *data, uint8_t size, bool isRead=false);

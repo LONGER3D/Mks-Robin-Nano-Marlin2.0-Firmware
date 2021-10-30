@@ -207,6 +207,38 @@ LGT_SCR_DW::LGT_SCR_DW()
 	_btnFilamentEnabled2 = true;
 }
 
+void LGT_SCR_DW::checkRecovery()
+{
+  #if ENABLED(USB_FLASH_DRIVE_SUPPORT)
+
+	// try sdcard
+	if (READ(SD_DETECT_PIN) == SD_DETECT_STATE) {	// sd inserted
+		card.changeMedia(&card.media_driver_sdcard);	
+		card.mount();
+		recovery.check();
+		if (check_recovery)
+			return;
+	}
+
+
+	// try usb drive
+	uint16_t usb_flash_loop = 1000;
+
+    do {
+      card.media_driver_usbFlash.idle();
+      watchdog_refresh();
+      delay(2);
+    } while((!card.media_driver_usbFlash.isInserted()) && (usb_flash_loop--));
+
+	if (card.media_driver_usbFlash.isInserted()) {
+    	card.changeMedia(&card.media_driver_usbFlash);
+		card.mount();
+		recovery.check();
+	}
+
+	#endif // USB_FLASH_DRIVE_SUPPORT
+}
+
 void LGT_SCR_DW::begin()
 {
     MYSERIAL1.begin(115200);
@@ -214,7 +246,7 @@ void LGT_SCR_DW::begin()
     status_type = PRINTER_SETUP;
 	// card.changeMedia(&card.media_driver_usbFlash);
     #if ENABLED(POWER_LOSS_RECOVERY)
-		// recovery.check();
+		checkRecovery();
     #endif
     DEBUG_PRINT_P(PSTR("dw: begin\n"));
 	lgtLcdDw.readScreenModel();
@@ -232,10 +264,10 @@ void LGT_SCR_DW::LGT_LCD_startup_settings()
         if (ii_setup >= (STARTUP_COUNTER-1000))
         {
             tartemp_flag = true;
-            if (card.isMounted()) {
-                DEBUG_PRINT_P(PSTR("dw: sd ok"));
-				lgtLcdDw.LGT_Display_Filename();
-			}
+            // if (card.isMounted()) {
+            //     DEBUG_PRINT_P(PSTR("dw: sd ok"));
+			// 	lgtLcdDw.LGT_Display_Filename();
+			// }
             if (check_recovery == false)
             {
                 DEBUG_PRINT_P(PSTR("dw: go home page"));

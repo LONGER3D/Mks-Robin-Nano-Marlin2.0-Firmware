@@ -111,7 +111,7 @@ void PrintJobRecovery::changed() {
 void PrintJobRecovery::check() {
   //if (!card.isMounted()) card.mount();
   #if ENABLED(LGT_LCD_DW)
-    if (!card.isMounted()) card.mount();
+    // if (!card.isMounted()) card.mount();
   #endif
 
   if (card.isMounted()) {
