@@ -2410,12 +2410,23 @@ void Temperature::init() {
   #endif
 
   #if HAS_HOTEND
-    #define _TEMP_MIN_E(NR) do{ \
-      const celsius_t tmin = _MAX(HEATER_##NR##_MINTEMP, TERN(TEMP_SENSOR_##NR##_IS_CUSTOM, 0, (int)pgm_read_word(&TEMPTABLE_##NR [TEMP_SENSOR_##NR##_MINTEMP_IND].celsius))); \
-      temp_range[NR].mintemp = tmin; \
-      while (analog_to_celsius_hotend(temp_range[NR].raw_min, NR) < tmin) \
-        temp_range[NR].raw_min += TEMPDIR(NR) * (OVERSAMPLENR); \
-    }while(0)
+    #if ENABLED(LGT)
+      #define _TEMP_MIN_E(NR) do{ \
+        const celsius_t tmin = HEATER_##NR##_MINTEMP; \
+        temp_range[NR].mintemp = tmin; \
+        while (analog_to_celsius_hotend(temp_range[NR].raw_min, NR) < tmin) \
+          temp_range[NR].raw_min += TEMPDIR(NR) * (OVERSAMPLENR); \
+        }while(0)
+    #else
+      #define _TEMP_MIN_E(NR) do{ \
+          const celsius_t tmin = HEATER_##NR##_MINTEMP \;
+        const celsius_t tmin = _MAX(HEATER_##NR##_MINTEMP, TERN(TEMP_SENSOR_##NR##_IS_CUSTOM, 0, (int)pgm_read_word(&TEMPTABLE_##NR [TEMP_SENSOR_##NR##_MINTEMP_IND].celsius))); \
+        temp_range[NR].mintemp = tmin; \
+        while (analog_to_celsius_hotend(temp_range[NR].raw_min, NR) < tmin) \
+          temp_range[NR].raw_min += TEMPDIR(NR) * (OVERSAMPLENR); \
+      }while(0)
+    #endif // LGT
+    
     #define _TEMP_MAX_E(NR) do{ \
       const celsius_t tmax = _MIN(HEATER_##NR##_MAXTEMP, TERN(TEMP_SENSOR_##NR##_IS_CUSTOM, 2000, (int)pgm_read_word(&TEMPTABLE_##NR [TEMP_SENSOR_##NR##_MAXTEMP_IND].celsius) - 1)); \
       temp_range[NR].maxtemp = tmax; \
