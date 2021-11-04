@@ -1027,6 +1027,7 @@ void LGT_SCR_DW::processButton()
 		case eBT_MOVE_DISABLE:
 			queue.clear();
 			quickstop_stepper();
+			stepper.disable_all_steppers();
 			break;
 		case eBT_MOVE_ENABLE:
 				stepper.enable_all_steppers();
@@ -2008,7 +2009,7 @@ void LGT_SCR_DW::showButtonsAfterHeating()
 	}
 }
 
-void LGT_SCR_DW::writeData(uint16_t addr, const uint8_t *data, uint8_t size, bool isRead/* =false */)
+void LGT_SCR_DW:: writeData(uint16_t addr, const uint8_t *data, uint8_t size, bool isRead/* =false */)
 {
 	// frame header
 	data_storage[0] = DW_FH_0;
