@@ -197,8 +197,8 @@
 #define ADDR_KILL_REASON                    (0x2000) 										// 2000
 
 // update
-#define ADDR_TXT_UPDATE_STATUS				(0x2040)										// 2040
-#define ADDR_VAL_UPDATE_PROGRESS			(ADDR_TXT_UPDATE_STATUS + LEN_FILE_NAME)		// 2060
+#define ADDR_TXT_UPDATE_MSG					(0x2040)										// 2040
+#define ADDR_VAL_UPDATE_PROGRESS			(ADDR_TXT_UPDATE_MSG + LEN_FILE_NAME)		// 2060
 
 // SP definition
 #define SP_TXT_PRINT_FILE_ITEM_0            (0x6000)                                        // 6000
@@ -356,6 +356,9 @@ enum E_MENU_TYPE {
 
 #define ID_DIALOG_CHANGE_FILA_0     (130) // added for JX screen
 #define ID_DIALOG_CHANGE_FILA_1     (131) // added for JX screen
+
+#define ID_MENU_LAUNCH				(0)
+#define ID_MENU_UPDATE     			(147)
 
 enum eAxis    : uint8_t { X=0, Y, Z };
 enum eExtruder : uint8_t { E0=0, E1, E2, E3, E4, E5, E6, E7 };
