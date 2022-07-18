@@ -209,7 +209,6 @@ LGT_SCR_DW::LGT_SCR_DW()
 
 void LGT_SCR_DW::checkRecovery()
 {
-  #if ENABLED(USB_FLASH_DRIVE_SUPPORT)
 
 	// try sdcard
 	if (READ(SD_DETECT_PIN) == SD_DETECT_STATE) {	// sd inserted
@@ -220,6 +219,7 @@ void LGT_SCR_DW::checkRecovery()
 			return;
 	}
 
+  #if ENABLED(USB_FLASH_DRIVE_SUPPORT)
 
 	// try usb drive
 	uint16_t usb_flash_loop = 1000;

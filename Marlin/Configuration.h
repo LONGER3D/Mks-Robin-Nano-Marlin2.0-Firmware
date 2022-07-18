@@ -2686,7 +2686,7 @@
 #endif
 
 #if ENABLED(LGT_LCD_DW)
-  #define LCD_SERIAL_PORT 3
+  #define LCD_SERIAL_PORT 2
   #define LCD_BAUDRATE 115200
 #endif
 //=============================================================================

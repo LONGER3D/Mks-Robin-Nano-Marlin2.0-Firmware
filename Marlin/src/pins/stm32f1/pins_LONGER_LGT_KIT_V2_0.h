@@ -117,15 +117,18 @@
 
 //
 // Persistent Storage
-// If no option is selected below the SD Card will be used
-// I2C BUG with maple core
-#if EITHER(NO_EEPROM_SELECTED, I2C_EEPROM)
-  #define I2C_EEPROM
-  #define MARLIN_EEPROM_SIZE 0x3FFF                            // AT24C16C 16KB
-#endif
+// If no option is selected below the I2C_EEPROM will be used
 
+#define I2C_EEPROM
 //#define FLASH_EEPROM_EMULATION
 //#define SDCARD_EEPROM_EMULATION
+
+#if EITHER(NO_EEPROM_SELECTED, I2C_EEPROM)
+  #if DISABLED(I2C_EEPROM)
+    #define I2C_EEPROM
+  #endif
+  #define MARLIN_EEPROM_SIZE (0x800U)                            // AT24C16C 16 Kbit = 2 KBytes
+#endif
 
 #if ENABLED(FLASH_EEPROM_EMULATION)
   #define EEPROM_PAGE_SIZE     (0x800U)           // 2KB
@@ -133,19 +136,30 @@
   #define MARLIN_EEPROM_SIZE (EEPROM_PAGE_SIZE)
 #endif
 
+
+
 //
 // SD Card
 //
 #ifndef SDCARD_CONNECTION
-  #define SDCARD_CONNECTION              ONBOARD
+  #define SDCARD_CONNECTION                 ONBOARD
 #endif
 
-#if SD_CONNECTION_IS(ONBOARD)
-  #define SPI_DEVICE                             2
-  // #define ENABLE_SPI2
-  #define SD_DETECT_PIN                       PB11//PC10
-  #define SCK_PIN                             PB13
-  #define MISO_PIN                            PB14
-  #define MOSI_PIN                            PB15
-  #define SS_PIN                              PB12//PA15
-#endif
+  #define SPI_DEVICE                        2
+  #define SD_SCK_PIN                        PB13
+  #define SD_MISO_PIN                       PB14
+  #define SD_MOSI_PIN                       PB15
+  #define SD_SS_PIN                         PB12
+  #define SDSS                              SD_SS_PIN
+  #define SD_DETECT_PIN                     PB11
+
+// #if SD_CONNECTION_IS(ONBOARD)
+//   #define SD_DETECT_PIN                     PB11
+//   #define SD_SCK_PIN                        PB13
+//   #define SD_MISO_PIN                       PB14
+//   #define SD_MOSI_PIN                       PB15
+
+//   #define ONBOARD_SPI_DEVICE                     2  // SPI1
+//   #define ONBOARD_SD_CS_PIN                   PB12   // Chip select for "System" SD card
+//   #define SDSS                              ONBOARD_SD_CS_PIN
+// #endif
