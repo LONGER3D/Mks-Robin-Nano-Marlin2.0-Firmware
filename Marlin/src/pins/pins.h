@@ -571,6 +571,9 @@
   #include "stm32f1/pins_ZM3E4_V1_0.h"          // STM32F1                                env:STM32F103VC_ZM3E4_USB env:STM32F103VC_ZM3E4_USB_maple
 #elif MB(ZONESTAR_ZM3E4V2)
   #include "stm32f1/pins_ZM3E4_V2_0.h"          // STM32F1                                env:STM32F103VE_ZM3E4V2_USB env:STM32F103VE_ZM3E4V2_USB_maple
+#elif MB(LONGER_LGT_KIT_V2_0)
+  #include "stm32f1/pins_LONGER_LGT_KIT_V2_0.h" // STM32F1                                env:longer_lgt_kit_2_0
+
 
 //
 // ARM Cortex-M4F

@@ -34,7 +34,7 @@
 #ifdef MYSERIAL0
   #undef MYSERIAL0
 #endif
-#define MYSERIAL0 MSerial0
+#define MYSERIAL0 MSerial1
 
 #define DEBUG_ECHOLNPAIR(k, v) 		do {DEBUG_ECHO(k); DEBUG_ECHOLN(v);} while(0)
 #define DEBUG_PRINT_P 				DEBUG_ECHO
@@ -1568,10 +1568,11 @@ void LGT_SCR_DW::processButton()
 				LGT_Change_Page(ID_DIALOG_CHANGE_FILA_1);
 			}
 			break;
-		
+	#if HAS_USB_FLASH_DRIVE
 		case eBT_FILE_USB_DRIVE:
 			selectUsbDrive();
 			break;
+	#endif
 		case eBT_FILE_SD_CARD:
 			selectSdCard();
 			break;
@@ -1707,7 +1708,7 @@ void LGT_SCR_DW::clearFileList()
 
 void LGT_SCR_DW::selectUsbDrive()
 {
-
+#if HAS_USB_FLASH_DRIVE
 	card.changeMedia(&card.media_driver_usbFlash);
 	clearFileList();
 	if (card.isMounted())
@@ -1719,6 +1720,7 @@ void LGT_SCR_DW::selectUsbDrive()
 		if (card.isMounted())
 			LGT_Display_Filename();
 	}
+#endif
 }
 
 void LGT_SCR_DW::selectSdCard()
@@ -1749,7 +1751,9 @@ void LGT_SCR_DW::LGT_SDCard_Status_Update()
 		{
 			DEBUG_ECHOLN("hello2");
 			sd_init_flag = false;
+		#if HAS_USB_FLASH_DRIVE
 			card.changeMedia(&card.media_driver_usbFlash);
+		#endif
 			if (!card.isMounted())
 			{
 				DEBUG_ECHOLN("hello3");
