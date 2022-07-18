@@ -318,7 +318,7 @@ void LGT_SCR_DW::LGT_Main_Function()
 		if (led_on == true)
 			LGT_Printer_Light_Update();
 	#endif // LK1_PRO
-	// LGT_SDCard_Status_Update();
+	LGT_SDCard_Status_Update();
 }
 
 /*************************************
@@ -1572,11 +1572,11 @@ void LGT_SCR_DW::processButton()
 		case eBT_FILE_USB_DRIVE:
 			selectUsbDrive();
 			break;
-	#endif
+
 		case eBT_FILE_SD_CARD:
 			selectSdCard();
 			break;
-
+	#endif
 		default: break;
 	}
 #endif // 0		
@@ -1761,26 +1761,13 @@ void LGT_SCR_DW::LGT_SDCard_Status_Update()
 				delay(2);
 				if (card.isMounted())
 				{
-					// #if ENABLED(POWER_LOSS_RECOVERY)
-					// 	recovery.check();
-					// #endif
-					// if (!check_recovery)
-					// {
-						if (menu_type == eMENU_FILE)
+					if (menu_type == eMENU_FILE)
+					{
+						if (ii_setup == (STARTUP_COUNTER + 1))
 						{
-							if (ii_setup == (STARTUP_COUNTER + 1))
-							{
-								LGT_Change_Page(ID_MENU_PRINT_FILES_O);
-							}
+							LGT_Change_Page(ID_MENU_PRINT_FILES_O);
 						}
-					// }
-					// else
-					// {
-					// 	return_home = true;
-					// 	check_recovery = false;
-					// 	ENABLE_AXIS_Z();  // lock z moter prevent from drop down
-					// 	LGT_Change_Page(ID_DIALOG_PRINT_RECOVERY);
-					// }
+					}
 
 					// list filename
 					LGT_Display_Filename();
