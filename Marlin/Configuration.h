@@ -78,12 +78,32 @@
   #define LGT_LCD_DW    // DWIN 4.3 inch LCD serial touch screen
 #endif
 
+// select printer model
 #define LK4X
+
+// test label
+#define FW_TEST_TAG "T001"
+#ifndef FW_TEST_TAG
+	#define FW_TEST_TAG ""
+#endif
+
+// bltouch label
+#define FW_BL_TAG "-BL"
+#ifndef FW_BL_TAG
+  #define FW_BL_TAG ""
+#endif
+
+#define SHORT_BUILD_VERSION       "0.0.1" FW_TEST_TAG "-Marlin2.x" FW_BL_TAG
+
+#define DEFAULT_MACHINE_NAME      "LONGER 3D Printer"   // override by  CUSTOM_MACHINE_NAME if any
+#define SOURCE_CODE_URL           "https://github.com/LONGER3D"
+#define STRING_DISTRIBUTION_DATE  "2022-07-18"
+#define WEBSITE_URL               "www.longer3d.com"    // full url: https://www.longer3d.com
 
 // @section info
 
 // Author info of this build printed to the host during boot and M115
-#define STRING_CONFIG_H_AUTHOR "(none, default config)" // Who made the changes.
+#define STRING_CONFIG_H_AUTHOR "LONGER3D" // Who made the changes.
 //#define CUSTOM_VERSION_FILE Version.h // Path from the root directory (no quotes)
 
 /**
@@ -765,10 +785,9 @@
 
 #define THERMAL_PROTECTION_HOTENDS // Enable thermal protection for all extruders
 #define THERMAL_PROTECTION_BED     // Enable thermal protection for the heated bed
-#if DISABLED(LK4X)
-  #define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
-  #define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
-#endif
+// #define THERMAL_PROTECTION_CHAMBER // Enable thermal protection for the heated chamber
+// #define THERMAL_PROTECTION_COOLER  // Enable thermal protection for the laser cooling
+
 //===========================================================================
 //============================= Mechanical Settings =========================
 //===========================================================================
@@ -858,7 +877,7 @@
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
 #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
 #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-#define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+#define Z_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define I_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define J_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define K_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
@@ -955,7 +974,7 @@
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
 #if ENABLED(LK4X)
-  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 425 }
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 719.03 }
 #else
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 1600, 400 }
 #endif
@@ -965,7 +984,7 @@
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
 #if ENABLED(LK4X)
-  #define DEFAULT_MAX_FEEDRATE          { 200, 200, 5, 25 }
+  #define DEFAULT_MAX_FEEDRATE          { 250, 250, 5, 25 }
 #else
   #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
 #endif
@@ -982,7 +1001,7 @@
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
 #if ENABLED(LK4X)
-  #define DEFAULT_MAX_ACCELERATION      { 200, 200, 100, 3000 }
+  #define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 3000 }
 #else
   #define DEFAULT_MAX_ACCELERATION      { 200, 200, 50, 500 }
 #endif
@@ -1000,13 +1019,9 @@
  *   M204 R    Retract Acceleration
  *   M204 T    Travel Acceleration
  */
-#define DEFAULT_ACCELERATION          200    // X, Y, Z and E acceleration for printing moves
+#define DEFAULT_ACCELERATION          500    // X, Y, Z and E acceleration for printing moves
 #define DEFAULT_RETRACT_ACCELERATION  500    // E acceleration for retracts
-#if ENABLED(LK4X)
-  #define DEFAULT_TRAVEL_ACCELERATION   200    // X, Y, Z acceleration for travel (non printing) moves
-#else
-  #define DEFAULT_TRAVEL_ACCELERATION   500    // X, Y, Z acceleration for travel (non printing) moves
-#endif
+#define DEFAULT_TRAVEL_ACCELERATION   500    // X, Y, Z acceleration for travel (non printing) moves
 
 /**
  * Default Jerk limits (mm/s)
@@ -1129,7 +1144,7 @@
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
-//#define BLTOUCH
+#define BLTOUCH
 
 /**
  * Touch-MI Probe by hotends.fr
@@ -1221,7 +1236,7 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { 10, 10, 0 }
+#define NOZZLE_TO_PROBE_OFFSET { -50, -5, 0 }
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1365,7 +1380,7 @@
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
 #define INVERT_X_DIR true
 #define INVERT_Y_DIR false
-#define INVERT_Z_DIR false
+#define INVERT_Z_DIR true
 //#define INVERT_I_DIR false
 //#define INVERT_J_DIR false
 //#define INVERT_K_DIR false
@@ -1373,7 +1388,7 @@
 // @section extruder
 
 // For direct drive extruder v9 set to true, for geared extruder set to false.
-#define INVERT_E0_DIR false
+#define INVERT_E0_DIR true
 #define INVERT_E1_DIR false
 #define INVERT_E2_DIR false
 #define INVERT_E3_DIR false
@@ -1412,8 +1427,8 @@
 
 // The size of the printable area
 #if ENABLED(LK4X)
-  #define X_BED_SIZE 220
-  #define Y_BED_SIZE 220  
+  #define X_BED_SIZE 265
+  #define Y_BED_SIZE 220
 #else
   #define X_BED_SIZE 200
   #define Y_BED_SIZE 200
@@ -1590,7 +1605,7 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-//#define AUTO_BED_LEVELING_BILINEAR
+#define AUTO_BED_LEVELING_BILINEAR
 //#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
@@ -1657,7 +1672,7 @@
 #if EITHER(AUTO_BED_LEVELING_LINEAR, AUTO_BED_LEVELING_BILINEAR)
 
   // Set the number of grid points per dimension.
-  #define GRID_MAX_POINTS_X 3
+  #define GRID_MAX_POINTS_X 5
   #define GRID_MAX_POINTS_Y GRID_MAX_POINTS_X
 
   // Probe along the Y axis, advancing X after each column
@@ -1791,11 +1806,11 @@
  * - Allows Z homing only when XY positions are known and trusted.
  * - If stepper drivers sleep, XY homing may be required again before Z homing.
  */
-//#define Z_SAFE_HOMING
+#define Z_SAFE_HOMING
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT X_CENTER  // X point for Z homing
-  #define Z_SAFE_HOMING_Y_POINT Y_CENTER  // Y point for Z homing
+  #define Z_SAFE_HOMING_X_POINT 114 // X_CENTER  // X point for Z homing
+  #define Z_SAFE_HOMING_Y_POINT 114 // Y_CENTER  // Y point for Z homing
 #endif
 
 // Homing speeds (mm/min)

@@ -85,8 +85,15 @@
 	#define FILAMENT_RUNOUT_MOVE_X 10
 	#define FILAMENT_RUNOUT_MOVE_Y 260
 	#define FILAMENT_RUNOUT_MOVE_F 50
-#else // LK4 PRO
+#elif defined(LK5_PRO)// LK4 PRO
 	#define MAC_MODEL       "LK4 Pro"
+	#define MAC_SIZE "220*220*250(mm)"
+	//#define FILAMENT_RUNOUT_MOVE "G1 X10 Y200 F3000"
+	#define FILAMENT_RUNOUT_MOVE_X 10
+	#define FILAMENT_RUNOUT_MOVE_Y 200
+	#define FILAMENT_RUNOUT_MOVE_F 50
+#elif defined(LK4X) // LK4 PRO
+	#define MAC_MODEL       "LK4X"
 	#define MAC_SIZE "220*220*250(mm)"
 	//#define FILAMENT_RUNOUT_MOVE "G1 X10 Y200 F3000"
 	#define FILAMENT_RUNOUT_MOVE_X 10
@@ -99,12 +106,7 @@
 #endif
 #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 60 } // Feedrates for manual moves along X, Y, Z, E from panel
 
-#define FW_TEST_TAG "T001"
-#ifndef FW_TEST_TAG
-	#define FW_TEST_TAG ""
-#endif
-#define	BOARD_FW_VER    "0.3.5" FW_TEST_TAG "-Marlin" 
-
+#define	BOARD_FW_VER    SHORT_BUILD_VERSION
 
 // DWIN system variable address
 #define DW_ADDR_CHANGE_PAGE 0x0084
