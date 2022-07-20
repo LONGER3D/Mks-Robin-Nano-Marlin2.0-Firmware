@@ -212,7 +212,9 @@ void LGT_SCR_DW::checkRecovery()
 
 	// try sdcard
 	if (READ(SD_DETECT_PIN) == SD_DETECT_STATE) {	// sd inserted
-		card.changeMedia(&card.media_driver_sdcard);	
+		#if ENABLED(USB_FLASH_DRIVE_SUPPORT)
+			card.changeMedia(&card.media_driver_sdcard);
+		#endif
 		card.mount();
 		recovery.check();
 		if (check_recovery)
@@ -1725,6 +1727,8 @@ void LGT_SCR_DW::selectUsbDrive()
 
 void LGT_SCR_DW::selectSdCard()
 {
+#if HAS_USB_FLASH_DRIVE
+
 	card.changeMedia(&card.media_driver_sdcard);
 	clearFileList();
 	if (card.isMounted())
@@ -1735,77 +1739,48 @@ void LGT_SCR_DW::selectSdCard()
 		if (card.isMounted())
 			LGT_Display_Filename();
 	}
+
+#endif	
 }
+
+
 
 /*************************************
 FUNCTION:	Checking sdcard and updating file list on screen
 **************************************/
 void LGT_SCR_DW::LGT_SDCard_Status_Update()
 {
-#if  ENABLED(SDSUPPORT) && PIN_EXISTS(SD_DETECT)
-    const uint8_t sd_status = (uint8_t)IS_SD_INSERTED();
-	if (sd_status)
-	{
-		// DEBUG_ECHOLN("hello");
-		if (sd_init_flag ==true)
-		{
-			DEBUG_ECHOLN("hello2");
-			sd_init_flag = false;
-		#if HAS_USB_FLASH_DRIVE
-			card.changeMedia(&card.media_driver_usbFlash);
-		#endif
-			if (!card.isMounted())
+    static bool last_sd_status;
+    const bool sd_status = IS_SD_INSERTED();
+    if (sd_status != last_sd_status) {
+      last_sd_status = sd_status;
+      if (sd_status) {
+		DEBUG_ECHOLN("sd inserted");
+	  	card.mount(); 
+		if (card.isMounted()) {
+			if (menu_type == eMENU_FILE)
 			{
-				DEBUG_ECHOLN("hello3");
-				card.mount();
-				delay(2);
-				if (card.isMounted())
+				if (ii_setup == (STARTUP_COUNTER + 1))
 				{
-					if (menu_type == eMENU_FILE)
-					{
-						if (ii_setup == (STARTUP_COUNTER + 1))
-						{
-							LGT_Change_Page(ID_MENU_PRINT_FILES_O);
-						}
-					}
-
-					// list filename
-					LGT_Display_Filename();
+					LGT_Change_Page(ID_MENU_PRINT_FILES_O);
 				}
 			}
+			LGT_Display_Filename(); // // list filename
 		}
-	}
-	else
-	{
-		if (sd_init_flag == false)
-		{
-			if (return_home)
-			{
-				return_home = false;
-				menu_type = eMENU_HOME;
-				LGT_Change_Page(ID_MENU_HOME);
-			}
-
-			// clean file list
-			DEHILIGHT_FILE_NAME();
-			sel_fileid = -1;
-			uint16_t var_addr = ADDR_TXT_PRINT_FILE_ITEM_0;
-			for (int i = 0; i < gcode_num; i++)   //Cleaning filename
-			{
-				LGT_Clean_DW_Display_Data(var_addr);
-				var_addr = var_addr+LEN_FILE_NAME;
-				if (i == 10 || i == 20)
-					LGT_Get_MYSERIAL1_Cmd();
-			}
-			LGT_Clean_DW_Display_Data(ADDR_TXT_PRINT_FILE_SELECT);
-			card.release();
-			gcode_num = 0;
-
-
+	  } else { 
+		DEBUG_ECHOLN("sd removed");
+		if (return_home) {
+			return_home = false;
+			menu_type = eMENU_HOME;
+			LGT_Change_Page(ID_MENU_HOME);
 		}
-		sd_init_flag = true;
+
+		clearFileList();
+
+		card.release();
+	  }
+    
 	}
-#endif
 }
 
 void LGT_SCR_DW::LGT_Save_Recovery_Filename(unsigned char cmd, unsigned char sys_cmd,unsigned int addr, unsigned int length)
