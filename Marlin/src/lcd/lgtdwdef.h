@@ -3,8 +3,14 @@
 #if ENABLED(LGT_LCD_DW)
 
 #define RECOVER_E_ADD 4//8
-#define LOAD_FILA_LEN 500
-#define UNLOAD_FILA_LEN -500
+#ifdef LK4X
+	#define LOAD_FILA_LEN 100
+	#define UNLOAD_FILA_LEN -100
+#else
+	#define LOAD_FILA_LEN 500
+	#define UNLOAD_FILA_LEN -500
+#endif // LK4X
+
 #define STARTUP_COUNTER 3000
 
 #ifdef LK1_PRO
