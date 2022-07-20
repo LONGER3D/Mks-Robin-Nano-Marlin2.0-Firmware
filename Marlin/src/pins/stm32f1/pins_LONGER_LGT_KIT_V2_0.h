@@ -50,6 +50,10 @@
 #define Z_STOP_PIN                           PE2   // pin 5 Standard Endstop or Z_Probe endstop function
 // #define Z_MAX_PIN                           PE1   // pin 4 (Unused in stock Alfawise setup)
                                  // May be used for BLTouch Servo function on older variants (<= V08)
+#ifndef Z_MIN_PROBE_PIN
+  #define Z_MIN_PROBE_PIN                   PE1   // BLTouch IN
+#endif
+
 #define ONBOARD_ENDSTOPPULLUPS
 
 //
@@ -93,25 +97,21 @@
 #define HEATER_BED_PIN                      PA0//PA8   // pin 67 (Hot Bed Mosfet)
 
 #define FAN_PIN                             PA1//PA15  // pin 77 (4cm Fan)
-#define FAN_SOFT_PWM                              // Required to avoid issues with heating or STLink
-#define FAN_MIN_PWM 35                            // Fan will not start in 1-30 range
-#define FAN_MAX_PWM 255
 
-//#define BEEPER_PIN                        PD13  // pin 60 (Servo PWM output 5V/GND on Board V0G+) made for BL-Touch sensor
-                                 // Can drive a PC Buzzer, if connected between PWM and 5V pins
+#define FAN_SOFT_PWM                        
+#define FAN_MIN_PWM                         80
+#define FAN_MAX_PWM                         255
 
+// 
+// LED for running
+//
 #define LED_PIN                             PD0//PC2   // pin 17
 
 //
 // PWM for a servo probe
-// Other servo devices are not supported on this board!
 //
 #if HAS_Z_SERVO_PROBE
   #define SERVO0_PIN                        PA8//PD13  // Open drain PWM pin on the V0G (GND or floating 5V)
-  // #define SERVO0_PWM_OD                           // Comment this if using PE5
-
-  //#define SERVO0_PIN                      PE5   // Pulled up PWM pin on the V08 (3.3V or 0)
-  //#undef Z_MAX_PIN                              // Uncomment if using ZMAX connector (PE5)
 #endif
 
 
