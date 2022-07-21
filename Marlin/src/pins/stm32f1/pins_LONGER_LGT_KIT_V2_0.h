@@ -32,7 +32,7 @@
 
 #define BOARD_INFO_NAME "LGT_KIT_V2.0"
 
-#define BOARD_NO_NATIVE_USB
+#define BOARD_NO_NATIVE_USB // use IC(CH34X) rather than USB CDC
 
 // Avoid conflict with TIMER_SERVO when using the STM32 HAL
 #define TEMP_TIMER                             5
