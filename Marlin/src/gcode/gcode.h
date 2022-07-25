@@ -1190,15 +1190,14 @@ private:
   #if ENABLED(LGT_LCD_DW)
     static void M2000();
     static void M2001();
-    #if ENABLED(U20_PLUS)
-      static void M2002();
-    #endif    
+    static void M2002();
     static void M2003();
     static void M2004();
     static void M2005();
     static void M2006();    
     static void M2007();
     static void M2008();
+    static void M2009();
   #endif
 
   static void T(const int8_t tool_index);

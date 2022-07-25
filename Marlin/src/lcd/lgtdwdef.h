@@ -136,7 +136,9 @@
 #define ADDR_VAL_FEED                       (ADDR_VAL_FAN + LEN_WORD)                       // 1032    
 #define ADDR_VAL_FLOW                       (ADDR_VAL_FEED + LEN_WORD)                      // 1034
 #define ADDR_VAL_LEDS_SWITCH                (ADDR_VAL_FLOW + LEN_WORD)                      // 1036
-#define ADDR_VAL_CUR_FEED                   (ADDR_VAL_LEDS_SWITCH+LEN_WORD)                  //1038
+#define ADDR_VAL_CUR_FEED                   (ADDR_VAL_LEDS_SWITCH + LEN_WORD)               // 1038
+#define ADDR_VAL_ZOFFSET                    (ADDR_VAL_CUR_FEED + LEN_WORD)                 	// 103A
+
 
 // LEVELING
 #define ADDR_VAL_LEVEL_Z_UP_DOWN             (ADDR_VAL_CUR_FEED+LEN_WORD)                   //103A
@@ -221,6 +223,7 @@
 // color_change(SP_TXT_PRINT_FILE_ITEM_0 + i*LEN_FILE_NAME, COLOR_LIGHT_RED)  
 
 
+// 1002 BUTTON_KEY VALUE definiion
 enum E_BUTTON_KEY {
 
 	eBT_MOVE_XY_HOME,           //0  0000
@@ -272,7 +275,7 @@ enum E_BUTTON_KEY {
 	eBT_DIAL_MOVE_NO_TEMP_RET,
 	eBT_PRINT_FILE_CLEAN,
 
-	eBT_UTILI_LEVEL_MEASU_START,  // == PREVIOUS
+	eBT_UTILI_LEVEL_MEASU_START,  			// == PREVIOUS
 	eBT_UTILI_LEVEL_CORNER_POS_1,
 	eBT_UTILI_LEVEL_CORNER_POS_2, //45 002D
 	eBT_UTILI_LEVEL_CORNER_POS_3,
@@ -298,14 +301,20 @@ enum E_BUTTON_KEY {
 	eBT_PRINT_FILA_UNLOAD_OK,		//65 0041
 	eBT_PRINT_FILA_LOAD_OK,
 
-	eBT_PRINT_HOME_FILAMENT,		// added for JX scrren
-	eBT_PRINT_TUNE_FILAMENT,			// added for JX scrren
+	eBT_PRINT_HOME_FILAMENT,					// added for JX scrren
+	eBT_PRINT_TUNE_FILAMENT,					// added for JX scrren
 
-	eBT_FILE_USB_DRIVE,
-	eBT_FILE_SD_CARD
+	eBT_FILE_USB_DRIVE,							// for ROBIN V3 board
+	eBT_FILE_SD_CARD,				// 70 0046  // for BOBIN V3 board
+
+	eBT_TUNE_ZOFFSET_SAVE,
+	eBT_LEVEL_AUTO_START,
+	eBT_LEVEL_AUTO_NEXT
 
 };
 
+
+// 1000 ADDR_VAL_MENU_TYPE VALUE definiion
 enum E_MENU_TYPE {
 
 	eMENU_IDLE,         // 0
@@ -318,9 +327,11 @@ enum E_MENU_TYPE {
 	eMENU_TUNE_SPEED,
 	eMENU_TUNE_FLOW,    // 8 
 	eMENU_UTILI_FILA,
-	eMENU_PRINT_HOME,   // 10   
+	eMENU_PRINT_HOME,   // 10   000A
 	eMENU_HOME_FILA,
-	eMENU_FILE			//12
+	eMENU_FILE,			// 12 000C
+	eMENU_TUNE_ZOFFSET,
+	eMENU_LEVEL_AUTO,	// 14 000E	  
 
 };
 
@@ -340,8 +351,11 @@ enum E_MENU_TYPE {
 #define ID_DIALOG_MOVE_WAIT         (126)
 #define ID_DIALOG_PRINT_WAIT		(127)
 #define ID_DIALOG_PRINT_TUNE_WAIT   (133)
+
+#define ID_DIALOG_LEVEL_FINISH      (123)
 #define ID_DIALOG_LEVEL_WAIT        (128)
-#define ID_DIALOG_LEVEL_FAILE       (129)
+#define ID_DIALOG_LEVEL_FAIL       	(129)
+
 #define ID_DIALOG_PRINT_LEVEL_FAILE (146)
 #define ID_DIALOG_UTILI_FILA_WAIT	(139)
 #define ID_DIALOG_UTILI_FILA_LOAD	(140)
@@ -357,10 +371,10 @@ enum E_MENU_TYPE {
 #define ID_MENU_MOVE_0              (3)
 #define ID_MENU_MOVE_1              (36)
 #define ID_CRASH_KILLED             (107)
-#define ID_MENU_MEASU_S1            (112)
-#define ID_MENU_MEASU_S2            (114)
-#define ID_MENU_MEASU_S3            (116)
-#define ID_MENU_MEASU_FINISH        (123)
+#define ID_MENU_LEVEL_AUTO_2        (112)
+// #define ID_MENU_MEASU_S1            (112)
+// #define ID_MENU_MEASU_S2            (114)
+// #define ID_MENU_MEASU_S3            (116)
 
 #define ID_DIALOG_CHANGE_FILA_0     (130) // added for JX screen
 #define ID_DIALOG_CHANGE_FILA_1     (131) // added for JX screen

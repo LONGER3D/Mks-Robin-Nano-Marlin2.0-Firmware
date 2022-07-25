@@ -37,14 +37,13 @@
 		  lgtLcdDw.LGT_Change_Page(ID_MENU_PRINT_HOME_PAUSE);
   }
 
-  #if ENABLED(U20_PLUS)
-  // wait for auto-levelling measuring 
-    void GcodeSuite::M2002()
-    {
-		  planner.synchronize();
-		  lgtLcdDw.LGT_Change_Page(ID_MENU_MEASU_S1 + 1);
-    }
-  #endif
+// wait for auto-levelling measuring 
+  void GcodeSuite::M2002()
+  {
+    planner.synchronize();
+    SERIAL_ECHOLNPGM("run M2002");
+    lgtLcdDw.LGT_Change_Page(ID_MENU_LEVEL_AUTO_2);
+  }
 
   // save position and filament runout  move
   void GcodeSuite::M2003()
@@ -111,6 +110,13 @@
 		else
 			lgtLcdDw.LGT_Change_Page(ID_MENU_MOVE_1+1);
   } 
+
+// wait for AUTO LEVELING(G29) finish in leveling menu
+  void GcodeSuite::M2009()
+  {
+    SERIAL_ECHOLNPGM("run M2009");
+    lgtLcdDw.LGT_Change_Page(ID_DIALOG_LEVEL_FINISH);
+  }
 
 #endif // LGT_LCD_DW
 

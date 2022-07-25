@@ -13,6 +13,12 @@
 #include "../feature/powerloss.h"
 #include "../module/stepper.h"
 
+#include "../module/probe.h"
+
+#if ENABLED(BABYSTEPPING)
+	#include "../feature/babystep.h"
+#endif
+
 #ifdef I2C_EEPROM
 	#include "../HAL/shared/eeprom_if.h"
 #endif // I2C_EEPROM
@@ -144,6 +150,69 @@ static inline void LGT_Total_Time_To_String(char* buf, uint32_t time)
 	uint32_t h = time / 60;
 	uint32_t m = time % 60;
 	sprintf_P(buf, PSTR("%lu h %lu m"), h, m);
+}
+
+// // // round float to two decimal point(two digit)
+// // // example: round(1.115) = 1.12
+// static float round2d(float var)
+// {
+//     // 37.66666 * 100 =3766.66
+//     // 3766.66 + .5 =3767.16    for rounding off value
+//     // then type cast to int so value is 3767
+//     // then divided by 100 so the value converted into 37.67
+//     float value = (int)(var * 100 + .5);
+//     return value / 100;
+// }
+// // https://www.geeksforgeeks.org/round-the-given-number-to-nearest-multiple-of-10/
+// // Round the given number to nearest multiple of 0.05
+// float roundToMultiple(float n)
+// {
+//     float m = (n >= 0? 0.05: -0.05);
+
+//     // Smaller multiple
+//     float a = (n / m) * m;
+     
+//     // Larger multiple
+//     float b = a + m;
+ 
+//     // Return of closest of two
+//     return (n - a > b - n)? b : a;
+// }
+
+static float getZOffset_mm() 
+{
+    return (
+      #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
+        planner.mm_per_step[Z_AXIS] * babystep.axis_total[BS_AXIS_IND(Z_AXIS)]
+      #elif HAS_BED_PROBE
+        probe.offset.z
+      #endif
+    );
+}
+
+static void setZOffset_mm(const_float_t value)
+{
+
+  if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX)) {
+    float diff = value - getZOffset_mm();
+    MYSERIAL0.print(diff, 8);
+    DEBUG_ECHOLNPAIR_F("\noffsetdiff:", diff);
+
+    babystep.add_mm(Z_AXIS, diff);
+    // sync z probe offset
+    #if HAS_BED_PROBE && ENABLED(BABYSTEP_ZPROBE_OFFSET)
+      if (TERN1(BABYSTEP_HOTEND_Z_OFFSET, active_extruder == 0)) {
+        probe.offset.z += diff;
+        MYSERIAL0.print(probe.offset.z, 8);
+        DEBUG_ECHOLNPAIR_F("probe offset: ", probe.offset.z);
+      }
+    #endif
+
+    
+  
+  }
+  UNUSED(value);
+
 }
 
 void LGT_SCR_DW::LGT_Power_Loss_Recovery_Resume() {
@@ -490,6 +559,7 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 		LGT_Send_Data_To_Screen(ADDR_VAL_FAN,thermalManager.scaledFanSpeed(0));
 		LGT_Send_Data_To_Screen(ADDR_VAL_FEED,feedrate_percentage);
 		LGT_Send_Data_To_Screen(ADDR_VAL_FLOW,planner.flow_percentage[0]);
+    LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(roundf(getZOffset_mm()*100)));
 		break;
 	case eMENU_MOVE:
 		LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_X, (int16_t)(current_position[X_AXIS] * 10));
@@ -516,6 +586,13 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 	case eMENU_TUNE_FLOW:
 		LGT_Send_Data_To_Screen(ADDR_VAL_FLOW,planner.flow_percentage[eExtruder::E0]);
 		break;
+	case eMENU_TUNE_ZOFFSET:
+    // DEBUG_ECHOLNPAIR_F("zoofset: ", getZOffset_mm());
+    LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(roundf(getZOffset_mm()*100)));
+		break;
+  case eMENU_LEVEL_AUTO:
+    LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_Z, (int16_t)(current_position[Z_AXIS] * 10));
+    break;
 	case eMENU_PRINT_HOME:
 		if (card.flag.sdprintdone)
 			break;
@@ -561,7 +638,7 @@ FUNCTION:	Analysising the commands of DWIN_Screen
 void LGT_SCR_DW::LGT_Analysis_DWIN_Screen_Cmd()
 {
 	DEBUG_ECHOPAIR("ADDR: ", Rec_Data.addr);
-	DEBUG_ECHOPAIR(" VALUE:", Rec_Data.data[0]);
+	DEBUG_ECHOLNPAIR(" VALUE:", Rec_Data.data[0]);
 	uint16_t LGT_feedrate = 0;
 	switch (Rec_Data.addr) {
 		case ADDR_VAL_PRINT_FILE_SELECT:   //Selecting gocede file and displaying on screen
@@ -605,7 +682,10 @@ void LGT_SCR_DW::LGT_Analysis_DWIN_Screen_Cmd()
 			break;
 		case ADDR_VAL_FLOW:
 			planner.flow_percentage[eExtruder::E0] = Rec_Data.data[0];
-			break;		
+			break;
+    case ADDR_VAL_ZOFFSET:
+			setZOffset_mm(float(int16_t(Rec_Data.data[0])) / 100);
+			break;
 		case ADDR_VAL_MENU_TYPE:
 			menu_type = (E_MENU_TYPE)(Rec_Data.data[0]);
 			LGT_Printer_Data_Updata();
@@ -792,11 +872,20 @@ void LGT_SCR_DW::processButton()
 		case eBT_MOVE_Z_PLUS_0:
 			if (planner.is_full())
 				break;
-			if (current_position[Z_AXIS] < Z_MAX_POS) {
-				current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
-				if (current_position[Z_AXIS] > Z_MAX_POS)
-					current_position[Z_AXIS] = Z_MAX_POS;
-				LGT_Line_To_Current(Z_AXIS);
+
+      if (soft_endstop._enabled) {
+
+        if (current_position[Z_AXIS] < Z_MAX_POS) {
+          current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
+          if (current_position[Z_AXIS] > Z_MAX_POS)
+            current_position[Z_AXIS] = Z_MAX_POS;
+        }
+
+      } else {
+        current_position[Z_AXIS] = current_position[Z_AXIS] + 10;
+      }
+      LGT_Line_To_Current(Z_AXIS);
+
 	#ifdef LK1_PRO
 				if (menu_type != eMENU_MOVE)
 				{
@@ -804,18 +893,19 @@ void LGT_SCR_DW::processButton()
 					LGT_Send_Data_To_Screen(ADDR_VAL_LEVEL_Z_UP_DOWN, (uint16_t)(10 * level_z_height));
 				}
 	#endif // LK1_PRO
-			}
 			break;
 		case eBT_MOVE_Z_MINUS_0:
 				if (planner.is_full())
 					break;
 				current_position[Z_AXIS] = current_position[Z_AXIS] - 10;
 	#if ANY(LK4_PRO, LK5_PRO)
-				if (xyz_home == true || z_home == true)
-				{
-					if (current_position[Z_AXIS] < Z_MIN_POS)
-						current_position[Z_AXIS] = Z_MIN_POS;
-				}
+        if (soft_endstop._enabled) {
+          if (xyz_home == true || z_home == true)
+          {
+            if (current_position[Z_AXIS] < Z_MIN_POS)
+              current_position[Z_AXIS] = Z_MIN_POS;
+          }
+        }
 	#endif // LK4_PRO, LK5_PRO
 				LGT_Line_To_Current(Z_AXIS);
 
@@ -830,11 +920,20 @@ void LGT_SCR_DW::processButton()
 		case eBT_MOVE_Z_PLUS_1:
 			if (planner.is_full())
 				break;
-			if (current_position[Z_AXIS] < Z_MAX_POS) {
-				current_position[Z_AXIS] = current_position[Z_AXIS] + 1;
-				if (current_position[Z_AXIS] > Z_MAX_POS)
-					current_position[Z_AXIS] = Z_MAX_POS;
-				LGT_Line_To_Current(Z_AXIS);
+      
+
+      if (soft_endstop._enabled) {
+
+        if (current_position[Z_AXIS] < Z_MAX_POS) {
+          current_position[Z_AXIS] = current_position[Z_AXIS] + 1;
+          if (current_position[Z_AXIS] > Z_MAX_POS)
+            current_position[Z_AXIS] = Z_MAX_POS;
+        }
+
+      } else {
+        current_position[Z_AXIS] = current_position[Z_AXIS] + 1;
+      }
+      LGT_Line_To_Current(Z_AXIS);
 	#ifdef LK1_PRO
 				if (menu_type != eMENU_MOVE)
 				{
@@ -842,18 +941,19 @@ void LGT_SCR_DW::processButton()
 					LGT_Send_Data_To_Screen(ADDR_VAL_LEVEL_Z_UP_DOWN, (uint16_t)(10 * level_z_height));
 				}
 	#endif // LK1_PRO
-			}
 			break;
 		case eBT_MOVE_Z_MINUS_1:
 				if (planner.is_full())
 					break;
 				current_position[Z_AXIS] = current_position[Z_AXIS] - 1;
 	#if ANY(LK4_PRO, LK5_PRO)
-				if (xyz_home == true || z_home == true)
-				{
-					if (current_position[Z_AXIS] < Z_MIN_POS)
-						current_position[Z_AXIS] = Z_MIN_POS;
-				}
+        if (soft_endstop._enabled) {
+          if (xyz_home == true || z_home == true)
+          {
+            if (current_position[Z_AXIS] < Z_MIN_POS)
+              current_position[Z_AXIS] = Z_MIN_POS;
+          }
+        }
 	#endif // LK4_PRO, LK5_PRO
 				LGT_Line_To_Current(Z_AXIS);
 	#ifdef LK1_PRO
@@ -867,11 +967,20 @@ void LGT_SCR_DW::processButton()
 		case eBT_MOVE_Z_PLUS_2:
 			if (planner.is_full())
 				break;
-			if (current_position[Z_AXIS] < Z_MAX_POS) {
-				current_position[Z_AXIS] = current_position[Z_AXIS] + 0.1;
-				if (current_position[Z_AXIS] > Z_MAX_POS)
-					current_position[Z_AXIS] = Z_MAX_POS;
-				LGT_Line_To_Current(Z_AXIS);
+      
+
+      if (soft_endstop._enabled) {
+
+        if (current_position[Z_AXIS] < Z_MAX_POS) {
+          current_position[Z_AXIS] = current_position[Z_AXIS] + 0.1;
+          if (current_position[Z_AXIS] > Z_MAX_POS)
+            current_position[Z_AXIS] = Z_MAX_POS;
+        }
+
+      } else {
+        current_position[Z_AXIS] = current_position[Z_AXIS] + 0.1;
+      }
+      LGT_Line_To_Current(Z_AXIS);
 
 	#ifdef LK1_PRO
 				if (menu_type != eMENU_MOVE)
@@ -880,18 +989,21 @@ void LGT_SCR_DW::processButton()
 					LGT_Send_Data_To_Screen(ADDR_VAL_LEVEL_Z_UP_DOWN, (uint16_t)(10 * level_z_height));
 				}
 	#endif // LK1_PRO
-			}
+
 			break;
 		case eBT_MOVE_Z_MINUS_2:
 				if (planner.is_full())
 					break;
 				current_position[Z_AXIS] = current_position[Z_AXIS] - 0.1;
 	#if ANY(LK4_PRO, LK5_PRO)
-				if (xyz_home == true || z_home == true)
-				{
-					if (current_position[Z_AXIS] < Z_MIN_POS)
-						current_position[Z_AXIS] = Z_MIN_POS;
-				}
+
+        if (soft_endstop._enabled) {
+          if (xyz_home == true || z_home == true)
+          {
+            if (current_position[Z_AXIS] < Z_MIN_POS)
+              current_position[Z_AXIS] = Z_MIN_POS;
+          }
+        }
 	#endif // LK4_PRO, LK5_PRO
 				LGT_Line_To_Current(Z_AXIS);
 
@@ -1579,6 +1691,29 @@ void LGT_SCR_DW::processButton()
 			selectSdCard();
 			break;
 	#endif
+		case eBT_TUNE_ZOFFSET_SAVE:
+			// save zoffset to EEPROM/flash
+			queue.enqueue_now_P(PSTR("M500"));
+			break;
+		case eBT_LEVEL_AUTO_START:
+			LGT_Change_Page(ID_DIALOG_LEVEL_WAIT);
+      probe.offset.z = 0;
+      soft_endstop._enabled = false;
+			queue.enqueue_one_P(PSTR("G28"));
+			queue.enqueue_one_P(PSTR("G1 F60 Z0")); 
+      // queue.enqueue_one_P(PSTR("M211 S0"));     // disable software endstop
+			queue.enqueue_one_P(PSTR("M2002"));
+			break;
+		case eBT_LEVEL_AUTO_NEXT:
+      probe.offset.z = current_position[Z_AXIS]; // set new z offset
+      // queue.enqueue_one_P(PSTR("M211 S1"));     // reactivate software endstop
+      soft_endstop._enabled = true;
+      queue.enqueue_one_P(PSTR("M500"));
+      queue.enqueue_one_P(PSTR("G28"));
+      queue.enqueue_one_P(PSTR("G29"));
+      queue.enqueue_one_P(PSTR("M2009"));
+      // queue.enqueue_now_P(PSTR("M500"));
+			break;
 		default: break;
 	}
 #endif // 0		
