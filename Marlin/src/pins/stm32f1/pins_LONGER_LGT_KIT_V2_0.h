@@ -120,7 +120,7 @@
 // If no option is selected below the I2C_EEPROM will be used
 
 #define I2C_EEPROM
-//#define FLASH_EEPROM_EMULATION
+// #define FLASH_EEPROM_EMULATION
 //#define SDCARD_EEPROM_EMULATION
 
 #if ENABLED(FLASH_EEPROM_EMULATION)
