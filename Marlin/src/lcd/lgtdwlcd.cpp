@@ -195,7 +195,7 @@ static void setZOffset_mm(const_float_t value)
 
   if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX)) {
     float diff = value - getZOffset_mm();
-    MYSERIAL0.print(diff, 8);
+    // MYSERIAL0.print(diff, 8);
     DEBUG_ECHOLNPAIR_F("\noffsetdiff:", diff);
 
     babystep.add_mm(Z_AXIS, diff);
@@ -204,7 +204,7 @@ static void setZOffset_mm(const_float_t value)
       if (TERN1(BABYSTEP_HOTEND_Z_OFFSET, active_extruder == 0)) {
         probe.offset.z += diff;
         MYSERIAL0.print(probe.offset.z, 8);
-        DEBUG_ECHOLNPAIR_F("probe offset: ", probe.offset.z);
+        DEBUG_ECHOLNPAIR_F("new probe offset: ", probe.offset.z);
       }
     #endif
 
