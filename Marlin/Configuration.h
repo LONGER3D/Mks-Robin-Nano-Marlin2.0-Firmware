@@ -82,7 +82,7 @@
 #define LK4X
 
 // test label
-#define FW_TEST_TAG "T001"
+#define FW_TEST_TAG "T002"
 #ifndef FW_TEST_TAG
 	#define FW_TEST_TAG ""
 #endif

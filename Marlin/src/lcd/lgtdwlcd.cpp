@@ -12,6 +12,7 @@
 #include "../feature/runout.h"
 #include "../feature/powerloss.h"
 #include "../module/stepper.h"
+#include "../module/settings.h"
 
 #include "../module/probe.h"
 
@@ -179,41 +180,27 @@ static inline void LGT_Total_Time_To_String(char* buf, uint32_t time)
 //     return (n - a > b - n)? b : a;
 // }
 
-static float getZOffset_mm() 
-{
-    return (
-      #if ENABLED(BABYSTEP_DISPLAY_TOTAL)
-        planner.mm_per_step[Z_AXIS] * babystep.axis_total[BS_AXIS_IND(Z_AXIS)]
-      #elif HAS_BED_PROBE
-        probe.offset.z
+static float getZOffset_mm() {
+    return (0.0f
+      #if HAS_BED_PROBE
+        + probe.offset.z
+      #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
+        + planner.mm_per_step[Z_AXIS] * babystep.axis_total[BS_AXIS_IND(Z_AXIS)]
       #endif
     );
-}
-
-static void setZOffset_mm(const_float_t value)
-{
-
-  if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX)) {
-    float diff = value - getZOffset_mm();
-    // MYSERIAL0.print(diff, 8);
-    DEBUG_ECHOLNPAIR_F("\noffsetdiff:", diff);
-
-    babystep.add_mm(Z_AXIS, diff);
-    // sync z probe offset
-    #if HAS_BED_PROBE && ENABLED(BABYSTEP_ZPROBE_OFFSET)
-      if (TERN1(BABYSTEP_HOTEND_Z_OFFSET, active_extruder == 0)) {
-        probe.offset.z += diff;
-        MYSERIAL0.print(probe.offset.z, 8);
-        DEBUG_ECHOLNPAIR_F("new probe offset: ", probe.offset.z);
-      }
-    #endif
-
-    
-  
   }
-  UNUSED(value);
 
-}
+static void setZOffset_mm(const_float_t value) {
+    #if HAS_BED_PROBE
+		babystep.add_mm(Z_AXIS, value - getZOffset_mm());
+      if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX))
+        probe.offset.z = value;
+    #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
+      babystep.add_mm(Z_AXIS, value - getZOffset_mm());
+    #else
+      UNUSED(value);
+    #endif
+  }
 
 void LGT_SCR_DW::LGT_Power_Loss_Recovery_Resume() {
 
@@ -559,7 +546,7 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 		LGT_Send_Data_To_Screen(ADDR_VAL_FAN,thermalManager.scaledFanSpeed(0));
 		LGT_Send_Data_To_Screen(ADDR_VAL_FEED,feedrate_percentage);
 		LGT_Send_Data_To_Screen(ADDR_VAL_FLOW,planner.flow_percentage[0]);
-    LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(roundf(getZOffset_mm()*100)));
+    	LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(getZOffset_mm()*100));
 		break;
 	case eMENU_MOVE:
 		LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_X, (int16_t)(current_position[X_AXIS] * 10));
@@ -588,7 +575,7 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 		break;
 	case eMENU_TUNE_ZOFFSET:
     // DEBUG_ECHOLNPAIR_F("zoofset: ", getZOffset_mm());
-    LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(roundf(getZOffset_mm()*100)));
+    LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(getZOffset_mm()*100));
 		break;
   case eMENU_LEVEL_AUTO:
     LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_Z, (int16_t)(current_position[Z_AXIS] * 10));
@@ -1693,7 +1680,8 @@ void LGT_SCR_DW::processButton()
 	#endif
 		case eBT_TUNE_ZOFFSET_SAVE:
 			// save zoffset to EEPROM/flash
-			queue.enqueue_now_P(PSTR("M500"));
+			// queue.enqueue_now_P(PSTR("M500"));
+			settings.save();
 			break;
 		case eBT_LEVEL_AUTO_START:
 			LGT_Change_Page(ID_DIALOG_LEVEL_WAIT);
