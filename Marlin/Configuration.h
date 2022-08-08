@@ -81,15 +81,19 @@
 // select printer model
 #define LK4X
 
-// test label
+// uncomment to use z probe(BL-TOUCH/3D-TOUCH)
+// #define WITH_Z_PROBE
+
+// test version label
 #define FW_TEST_TAG "T002"
 #ifndef FW_TEST_TAG
 	#define FW_TEST_TAG ""
 #endif
 
 // bltouch label
-#define FW_BL_TAG "-BL"
-#ifndef FW_BL_TAG
+#if ENABLED(WITH_Z_PROBE)
+  #define FW_BL_TAG "-BL"
+#else 
   #define FW_BL_TAG ""
 #endif
 
@@ -1090,7 +1094,9 @@
 // #define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
 
 // Force the use of the probe for Z-axis homing
-#define USE_PROBE_FOR_Z_HOMING
+#if ENABLED(WITH_Z_PROBE)
+  #define USE_PROBE_FOR_Z_HOMING
+#endif
 
 /**
  * Z_MIN_PROBE_PIN
@@ -1144,7 +1150,9 @@
 /**
  * The BLTouch probe uses a Hall effect sensor and emulates a servo.
  */
-#define BLTOUCH
+#if ENABLED(WITH_Z_PROBE)
+  #define BLTOUCH
+#endif
 
 /**
  * Touch-MI Probe by hotends.fr
@@ -1316,7 +1324,9 @@
 #define Z_PROBE_OFFSET_RANGE_MAX 10
 
 // Enable the M48 repeatability test to test probe accuracy
-#define Z_MIN_PROBE_REPEATABILITY_TEST
+#if ENABLED(WITH_Z_PROBE)
+  #define Z_MIN_PROBE_REPEATABILITY_TEST
+#endif
 
 // Before deploy/stow pause for user confirmation
 //#define PAUSE_BEFORE_DEPLOY_STOW
@@ -1605,7 +1615,9 @@
  */
 //#define AUTO_BED_LEVELING_3POINT
 //#define AUTO_BED_LEVELING_LINEAR
-#define AUTO_BED_LEVELING_BILINEAR
+#if ENABLED(WITH_Z_PROBE)
+  #define AUTO_BED_LEVELING_BILINEAR
+#endif
 //#define AUTO_BED_LEVELING_UBL
 //#define MESH_BED_LEVELING
 
@@ -1806,7 +1818,9 @@
  * - Allows Z homing only when XY positions are known and trusted.
  * - If stepper drivers sleep, XY homing may be required again before Z homing.
  */
-#define Z_SAFE_HOMING
+#if ENABLED(WITH_Z_PROBE)
+  #define Z_SAFE_HOMING
+#endif
 
 #if ENABLED(Z_SAFE_HOMING)
   #define Z_SAFE_HOMING_X_POINT 114 // X_CENTER  // X point for Z homing

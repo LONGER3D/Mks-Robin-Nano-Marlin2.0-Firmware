@@ -182,25 +182,25 @@ static inline void LGT_Total_Time_To_String(char* buf, uint32_t time)
 
 static float getZOffset_mm() {
     return (0.0f
-      #if HAS_BED_PROBE
+      #if ENABLED(WITH_Z_PROBE)
         + probe.offset.z
-      #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
+      #else
         + planner.mm_per_step[Z_AXIS] * babystep.axis_total[BS_AXIS_IND(Z_AXIS)]
       #endif
     );
   }
 
 static void setZOffset_mm(const_float_t value) {
-    #if HAS_BED_PROBE
+	
+	if (ENABLED(BABYSTEP_WITHOUT_HOMING) || all_axes_trusted() || ENABLED(BABYSTEP_ALWAYS_AVAILABLE))
 		babystep.add_mm(Z_AXIS, value - getZOffset_mm());
+
+	#if ENABLED(WITH_Z_PROBE)
       if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX))
         probe.offset.z = value;
-    #elif ENABLED(BABYSTEP_DISPLAY_TOTAL)
-      babystep.add_mm(Z_AXIS, value - getZOffset_mm());
-    #else
-      UNUSED(value);
     #endif
-  }
+
+}
 
 void LGT_SCR_DW::LGT_Power_Loss_Recovery_Resume() {
 
@@ -1678,9 +1678,10 @@ void LGT_SCR_DW::processButton()
 			selectSdCard();
 			break;
 	#endif
+
+	#if ENABLED(WITH_Z_PROBE)
 		case eBT_TUNE_ZOFFSET_SAVE:
-			// save zoffset to EEPROM/flash
-			// queue.enqueue_now_P(PSTR("M500"));
+			// save z probe offset to EEPROM/flash
 			settings.save();
 			break;
 		case eBT_LEVEL_AUTO_START:
@@ -1698,16 +1699,19 @@ void LGT_SCR_DW::processButton()
 			settings.save();						// save z offset
 			LGT_Change_Page(ID_DIALOG_LEVEL_NEXT);	// goto next page
 			break;
-		case eBT_HOME_LEVEL_SELECT:
-			LGT_Change_Page(ID_MENU_LEVELING);				// goto LEVELING with probe
-			// LGT_Change_Page(ID_MENU_LEVELING_NO_PROBE);		// goto LEVELING without probe
-			break;
-
 		case eBT_LEVEL_AUTO_NEXT_YES:
 			LGT_Change_Page(ID_MENU_LEVELING_MEASU);
 			queue.enqueue_one_P(PSTR("G28"));
 			queue.enqueue_one_P(PSTR("G29"));
 			queue.enqueue_one_P(PSTR("M2009"));		// auto go to finish dialog
+			break;
+	#endif	// WITH_Z_PROBE
+		case eBT_HOME_LEVEL_SELECT:
+			#if ENABLED(WITH_Z_PROBE)
+				LGT_Change_Page(ID_MENU_LEVELING);				// goto LEVELING with probe
+			#else
+				LGT_Change_Page(ID_MENU_LEVELING_NO_PROBE);		// goto LEVELING without probe
+			#endif // WITH_Z_PROBE
 			break;
 
 		default: break;
