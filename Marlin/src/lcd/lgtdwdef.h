@@ -207,8 +207,8 @@
 #define ADDR_KILL_REASON                    (0x2000) 										// 2000
 
 // update
-#define ADDR_TXT_UPDATE_MSG					(0x2040)										// 2040
-#define ADDR_VAL_UPDATE_PROGRESS			(ADDR_TXT_UPDATE_MSG + LEN_FILE_NAME)		// 2060
+#define ADDR_TXT_UPDATE_MSG					(0x2040)										// 2040		used in bootloader
+#define ADDR_VAL_UPDATE_PROGRESS			(ADDR_TXT_UPDATE_MSG + LEN_FILE_NAME)			// 2060		used in bootloader
 
 // SP definition
 #define SP_TXT_PRINT_FILE_ITEM_0            (0x6000)                                        // 6000
@@ -307,9 +307,11 @@ enum E_BUTTON_KEY {
 	eBT_FILE_USB_DRIVE,							// for ROBIN V3 board
 	eBT_FILE_SD_CARD,				// 70 0046  // for BOBIN V3 board
 
-	eBT_TUNE_ZOFFSET_SAVE,
-	eBT_LEVEL_AUTO_START,
-	eBT_LEVEL_AUTO_NEXT
+	eBT_TUNE_ZOFFSET_SAVE,			//    0047
+	eBT_LEVEL_AUTO_START,			//    0048
+	eBT_LEVEL_AUTO_NEXT,			//    0049
+	eBT_HOME_LEVEL_SELECT,			//    004A
+	eBT_LEVEL_AUTO_NEXT_YES 		//    004B
 
 };
 
@@ -353,7 +355,8 @@ enum E_MENU_TYPE {
 #define ID_DIALOG_PRINT_TUNE_WAIT   (133)
 
 #define ID_DIALOG_LEVEL_FINISH      (123)
-#define ID_DIALOG_LEVEL_WAIT        (128)
+#define ID_DIALOG_LEVEL_NEXT        (125)
+#define ID_DIALOG_LEVEL_HOME_WAIT   (128)
 #define ID_DIALOG_LEVEL_FAIL       	(129)
 
 #define ID_DIALOG_PRINT_LEVEL_FAILE (146)
@@ -381,6 +384,10 @@ enum E_MENU_TYPE {
 
 #define ID_MENU_LAUNCH				(0)
 #define ID_MENU_UPDATE     			(147)
+
+#define ID_MENU_LEVELING			(4)
+#define ID_MENU_LEVELING_NO_PROBE	(109)
+#define ID_MENU_LEVELING_MEASU 		(114)
 
 enum eAxis    : uint8_t { X=0, Y, Z };
 enum eExtruder : uint8_t { E0=0, E1, E2, E3, E4, E5, E6, E7 };

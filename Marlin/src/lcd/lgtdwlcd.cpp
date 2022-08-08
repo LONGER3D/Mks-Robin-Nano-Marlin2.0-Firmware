@@ -574,12 +574,12 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 		LGT_Send_Data_To_Screen(ADDR_VAL_FLOW,planner.flow_percentage[eExtruder::E0]);
 		break;
 	case eMENU_TUNE_ZOFFSET:
-    // DEBUG_ECHOLNPAIR_F("zoofset: ", getZOffset_mm());
-    LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(getZOffset_mm()*100));
+    	// DEBUG_ECHOLNPAIR_F("zoofset: ", getZOffset_mm());
+    	LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(getZOffset_mm()*100));
 		break;
-  case eMENU_LEVEL_AUTO:
-    LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_Z, (int16_t)(current_position[Z_AXIS] * 10));
-    break;
+  	case eMENU_LEVEL_AUTO:
+    	LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_Z, (int16_t)(current_position[Z_AXIS] * 10));
+    	break;
 	case eMENU_PRINT_HOME:
 		if (card.flag.sdprintdone)
 			break;
@@ -1591,7 +1591,7 @@ void LGT_SCR_DW::processButton()
 	// ----- u20 auto leveling with probe -----
 	#ifdef LK1_PRO
 		case eBT_UTILI_LEVEL_MEASU_START:  // == PREVIOUS
-			LGT_Change_Page(ID_DIALOG_LEVEL_WAIT);
+			LGT_Change_Page(ID_DIALOG_LEVEL_HOME_WAIT);
 			level_z_height = 0;
 			LGT_Send_Data_To_Screen(ADDR_VAL_LEVEL_Z_UP_DOWN,0);
 			menu_measu_step = 1;
@@ -1684,24 +1684,32 @@ void LGT_SCR_DW::processButton()
 			settings.save();
 			break;
 		case eBT_LEVEL_AUTO_START:
-			LGT_Change_Page(ID_DIALOG_LEVEL_WAIT);
-      probe.offset.z = 0;
-      soft_endstop._enabled = false;
+
+			LGT_Change_Page(ID_DIALOG_LEVEL_HOME_WAIT);
+      		probe.offset.z = 0;
+      		soft_endstop._enabled = false;			// deactivate software stop
 			queue.enqueue_one_P(PSTR("G28"));
 			queue.enqueue_one_P(PSTR("G1 F60 Z0")); 
-      // queue.enqueue_one_P(PSTR("M211 S0"));     // disable software endstop
-			queue.enqueue_one_P(PSTR("M2002"));
+			queue.enqueue_one_P(PSTR("M2002"));		// auto goto next page
 			break;
 		case eBT_LEVEL_AUTO_NEXT:
-      probe.offset.z = current_position[Z_AXIS]; // set new z offset
-      // queue.enqueue_one_P(PSTR("M211 S1"));     // reactivate software endstop
-      soft_endstop._enabled = true;
-      queue.enqueue_one_P(PSTR("M500"));
-      queue.enqueue_one_P(PSTR("G28"));
-      queue.enqueue_one_P(PSTR("G29"));
-      queue.enqueue_one_P(PSTR("M2009"));
-      // queue.enqueue_now_P(PSTR("M500"));
+			probe.offset.z = current_position[Z_AXIS]; // set new z offset
+			soft_endstop._enabled = true;			// reavtivate software stop
+			settings.save();						// save z offset
+			LGT_Change_Page(ID_DIALOG_LEVEL_NEXT);	// goto next page
 			break;
+		case eBT_HOME_LEVEL_SELECT:
+			LGT_Change_Page(ID_MENU_LEVELING);				// goto LEVELING with probe
+			// LGT_Change_Page(ID_MENU_LEVELING_NO_PROBE);		// goto LEVELING without probe
+			break;
+
+		case eBT_LEVEL_AUTO_NEXT_YES:
+			LGT_Change_Page(ID_MENU_LEVELING_MEASU);
+			queue.enqueue_one_P(PSTR("G28"));
+			queue.enqueue_one_P(PSTR("G29"));
+			queue.enqueue_one_P(PSTR("M2009"));		// auto go to finish dialog
+			break;
+
 		default: break;
 	}
 #endif // 0		
