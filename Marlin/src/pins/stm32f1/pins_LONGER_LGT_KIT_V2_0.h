@@ -131,9 +131,13 @@
   #if DISABLED(I2C_EEPROM)
     #define I2C_EEPROM
   #endif
-  #define MARLIN_EEPROM_SIZE (0x800U)                            // AT24C16C 16 Kbit = 2 KBytes
-#endif
 
+  #define SOFT_I2C_EEPROM                              // Force the use of Software I2C
+  #define MARLIN_EEPROM_SIZE (0x800U)                  // AT24C16C 16 Kbit = 2 KBytes
+  #define I2C_SDA_PIN                      SDA
+  #define I2C_SCL_PIN                      SCL
+  #undef NO_EEPROM_SELECTED
+#endif
 
 //
 // SD Card
