@@ -182,7 +182,7 @@ static inline void LGT_Total_Time_To_String(char* buf, uint32_t time)
 
 static float getZOffset_mm() {
     return (0.0f
-      #if ENABLED(WITH_Z_PROBE)
+      #if 1//ENABLED(WITH_Z_PROBE)
         + probe.offset.z
       #else
         + planner.mm_per_step[Z_AXIS] * babystep.axis_total[BS_AXIS_IND(Z_AXIS)]
@@ -195,7 +195,7 @@ static void setZOffset_mm(const_float_t value) {
 	if (ENABLED(BABYSTEP_WITHOUT_HOMING) || all_axes_trusted() || ENABLED(BABYSTEP_ALWAYS_AVAILABLE))
 		babystep.add_mm(Z_AXIS, value - getZOffset_mm());
 
-	#if ENABLED(WITH_Z_PROBE)
+	#if 1// ENABLED(WITH_Z_PROBE)
       if (WITHIN(value, Z_PROBE_OFFSET_RANGE_MIN, Z_PROBE_OFFSET_RANGE_MAX))
         probe.offset.z = value;
     #endif
@@ -1679,11 +1679,12 @@ void LGT_SCR_DW::processButton()
 			break;
 	#endif
 
-	#if ENABLED(WITH_Z_PROBE)
+
 		case eBT_TUNE_ZOFFSET_SAVE:
 			// save z probe offset to EEPROM/flash
 			settings.save();
 			break;
+	#if ENABLED(WITH_Z_PROBE)
 		case eBT_LEVEL_AUTO_START:
 
 			LGT_Change_Page(ID_DIALOG_LEVEL_HOME_WAIT);
