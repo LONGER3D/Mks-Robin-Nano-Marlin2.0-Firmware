@@ -82,7 +82,7 @@
 #define LK4X
 
 // uncomment to use z probe(BL-TOUCH/3D-TOUCH)
-// #define WITH_Z_PROBE
+#define WITH_Z_PROBE
 
 // test version label
 #define FW_TEST_TAG "T002"
