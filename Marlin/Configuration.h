@@ -74,7 +74,6 @@
 #define LGT // comment to remove all code snippets from LGT(Longer 3D Technology)
 
 #if ENABLED(LGT)
-  //  #define LGT_LCD_TFT    // LCD 2.8 inch MCU TFT touch screen
   #define LGT_LCD_DW    // DWIN 4.3 inch LCD serial touch screen
 #endif
 
@@ -85,7 +84,7 @@
 #define WITH_Z_PROBE
 
 // test version label
-#define FW_TEST_TAG "T002"
+#define FW_TEST_TAG "T003"
 #ifndef FW_TEST_TAG
 	#define FW_TEST_TAG ""
 #endif
@@ -97,11 +96,11 @@
   #define FW_BL_TAG ""
 #endif
 
-#define SHORT_BUILD_VERSION       "0.0.1" FW_TEST_TAG "-Marlin2.x" FW_BL_TAG
+#define SHORT_BUILD_VERSION       "1.0.0" FW_TEST_TAG "-Marlin2.x" FW_BL_TAG
 
 #define DEFAULT_MACHINE_NAME      "LONGER 3D Printer"   // override by  CUSTOM_MACHINE_NAME if any
 #define SOURCE_CODE_URL           "https://github.com/LONGER3D"
-#define STRING_DISTRIBUTION_DATE  "2022-07-18"
+#define STRING_DISTRIBUTION_DATE  "2022-08"
 #define WEBSITE_URL               "www.longer3d.com"    // full url: https://www.longer3d.com
 
 // @section info

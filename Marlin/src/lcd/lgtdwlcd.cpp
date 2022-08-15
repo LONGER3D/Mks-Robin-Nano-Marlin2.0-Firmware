@@ -29,7 +29,7 @@
 // #endif
 
 // debug define
-#define DEBUG_LGTDWLCD
+// #define DEBUG_LGTDWLCD
 #define DEBUG_OUT ENABLED(DEBUG_LGTDWLCD)
 #include "../core/debug_out.h"
 
@@ -546,7 +546,7 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 		LGT_Send_Data_To_Screen(ADDR_VAL_FAN,thermalManager.scaledFanSpeed(0));
 		LGT_Send_Data_To_Screen(ADDR_VAL_FEED,feedrate_percentage);
 		LGT_Send_Data_To_Screen(ADDR_VAL_FLOW,planner.flow_percentage[0]);
-    	LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(getZOffset_mm()*100));
+    	LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(roundf(getZOffset_mm()*100)));
 		break;
 	case eMENU_MOVE:
 		LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_X, (int16_t)(current_position[X_AXIS] * 10));
@@ -575,7 +575,7 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 		break;
 	case eMENU_TUNE_ZOFFSET:
     	// DEBUG_ECHOLNPAIR_F("zoofset: ", getZOffset_mm());
-    	LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(getZOffset_mm()*100));
+    	LGT_Send_Data_To_Screen(ADDR_VAL_ZOFFSET, (int16_t)(roundf(getZOffset_mm()*100)));
 		break;
   	case eMENU_LEVEL_AUTO:
     	LGT_Send_Data_To_Screen(ADDR_VAL_MOVE_POS_Z, (int16_t)(current_position[Z_AXIS] * 10));
@@ -2202,7 +2202,7 @@ void LGT_SCR_DW::readScreenModel()
 
 	MYSERIAL0.print("Touch Screen: ");
 	if (temp[6] == 'D' && temp[7] == 'W') {	// DWIN T5 screen
-		MYSERIAL0.println("DWIN T5");
+		MYSERIAL0.println("DWIN T5 or emulator");
 		_screenModel = SCREEN_DWIN_T5;
 	} else if (temp[6] == 'J' && temp[7] == 'X') { // JX screen
 		MYSERIAL0.println("JX");
