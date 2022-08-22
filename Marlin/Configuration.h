@@ -84,7 +84,7 @@
 #define WITH_Z_PROBE
 
 // test version label
-#define FW_TEST_TAG "T003"
+// #define FW_TEST_TAG "T003"
 #ifndef FW_TEST_TAG
 	#define FW_TEST_TAG ""
 #endif
@@ -96,7 +96,7 @@
   #define FW_BL_TAG ""
 #endif
 
-#define SHORT_BUILD_VERSION       "1.0.0" FW_TEST_TAG "-Marlin2.x" FW_BL_TAG
+#define SHORT_BUILD_VERSION       "1.0.1" FW_TEST_TAG "-Marlin2.x" FW_BL_TAG
 
 #define DEFAULT_MACHINE_NAME      "LONGER 3D Printer"   // override by  CUSTOM_MACHINE_NAME if any
 #define SOURCE_CODE_URL           "https://github.com/LONGER3D"
@@ -593,7 +593,7 @@
 // Above this temperature the heater will be switched off.
 // This can protect components from overheating, but NOT from shorts and failures.
 // (Use MINTEMP for thermistor short/failure protection.)
-#define HEATER_0_MAXTEMP 275
+#define HEATER_0_MAXTEMP 265
 #define HEATER_1_MAXTEMP 275
 #define HEATER_2_MAXTEMP 275
 #define HEATER_3_MAXTEMP 275
@@ -601,7 +601,7 @@
 #define HEATER_5_MAXTEMP 275
 #define HEATER_6_MAXTEMP 275
 #define HEATER_7_MAXTEMP 275
-#define BED_MAXTEMP      150
+#define BED_MAXTEMP      110
 #define CHAMBER_MAXTEMP  60
 
 /**
