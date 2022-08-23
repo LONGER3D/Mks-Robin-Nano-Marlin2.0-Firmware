@@ -1612,12 +1612,9 @@ void setup() {
 
   #if ENABLED(LGT_LCD_DW)
     WRITE(FAN_PIN, LOW);  // turn off fan
+    thermalManager.soft_pwm_amount_fan[0] = 0;
     lgtLcdDw.begin();
   #endif
-  // LCD_SERIAL.begin(LCD_BAUDRATE);
-  // serial_connect_timeout = millis() + 1000UL;
-  // while (!LCD_SERIAL.connected() && PENDING(millis(), serial_connect_timeout)) { /*nada*/ }
-  // LCD_SERIAL.println("hello");
 
   marlin_state = MF_RUNNING;
 
