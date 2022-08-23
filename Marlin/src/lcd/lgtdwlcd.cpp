@@ -1400,7 +1400,7 @@ void LGT_SCR_DW::processButton()
 				menu_type = eMENU_HOME;
 			break;
 
-	// ----- mannual leveling menu -----
+	// ----- manual leveling menu -----
 		case eBT_UTILI_LEVEL_CORNER_POS_1:
 			#ifdef LK1_PRO
 				if (xy_home == false)
@@ -1429,6 +1429,7 @@ void LGT_SCR_DW::processButton()
 				{
 					thermalManager.setTargetHotend(0, eExtruder::E0);
 					thermalManager.setTargetBed(0);
+					queue.enqueue_one_P(PSTR("G90"));
 					queue.enqueue_one_P(PSTR("G28"));
 
 					xyz_home = true;
@@ -1464,6 +1465,7 @@ void LGT_SCR_DW::processButton()
 				{
 					thermalManager.setTargetHotend(0, eExtruder::E0);
 					thermalManager.setTargetBed(0);
+					queue.enqueue_one_P(PSTR("G90"));
 					queue.enqueue_one_P(PSTR("G28"));
 					xyz_home = true;
 				}
@@ -1498,6 +1500,7 @@ void LGT_SCR_DW::processButton()
 				{
 					thermalManager.setTargetHotend(0, eExtruder::E0);
 					thermalManager.setTargetBed(0);
+					queue.enqueue_one_P(PSTR("G90"));
 					queue.enqueue_one_P(PSTR("G28"));
 					xyz_home = true;
 				}
@@ -1532,6 +1535,7 @@ void LGT_SCR_DW::processButton()
 				{
 					thermalManager.setTargetHotend(0, eExtruder::E0);
 					thermalManager.setTargetBed(0);
+					queue.enqueue_one_P(PSTR("G90"));
 					queue.enqueue_one_P(PSTR("G28"));
 					xyz_home = true;
 				}
@@ -1566,6 +1570,7 @@ void LGT_SCR_DW::processButton()
 				{
 					thermalManager.setTargetHotend(0, eExtruder::E0);
 					thermalManager.setTargetBed(0);
+					queue.enqueue_one_P(PSTR("G90"));
 					queue.enqueue_one_P(PSTR("G28"));
 					xyz_home = true;
 				}
@@ -1997,10 +2002,11 @@ void LGT_SCR_DW::LGT_Stop_Printing()
 	#if ENABLED(POWER_LOSS_RECOVERY)
 		recovery.purge();
 	#endif
-	queue.enqueue_now_P(PSTR("G91"));
-	queue.enqueue_now_P(PSTR("G1 Z10"));
-	queue.enqueue_now_P(PSTR("G28 X0"));
-	queue.enqueue_now_P(PSTR("M2000"));
+	queue.enqueue_one_P(PSTR("G91"));
+	queue.enqueue_one_P(PSTR("G1 Z10"));
+	queue.enqueue_one_P(PSTR("G90"));
+	queue.enqueue_one_P(PSTR("G28 X0"));
+	queue.enqueue_one_P(PSTR("M2000"));
 }
 
 /*************************************
