@@ -74,6 +74,10 @@ void GcodeSuite::M24() {
   #endif
 
   if (card.isFileOpen()) {
+    #if ENABLED(LGT_LCD_DW)
+      lgtLcdDw.startPrint();
+    #endif
+
     card.startOrResumeFilePrinting();            // SD card will now be read for commands
     startOrResumeJob();               // Start (or resume) the print job timer
     TERN_(POWER_LOSS_RECOVERY, recovery.prepare());

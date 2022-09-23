@@ -116,6 +116,8 @@ public:
 	void LGT_Printer_Data_Updata();
 	void LGT_DW_Setup();
 	void LGT_Change_Filament(int fila_len);
+	void startPrint();
+
 public:
 	void readScreenModel();	
 	static void test();

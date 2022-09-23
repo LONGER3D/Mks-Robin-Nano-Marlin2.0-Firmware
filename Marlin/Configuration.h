@@ -84,7 +84,7 @@
 #define WITH_Z_PROBE
 
 // test version label
-// #define FW_TEST_TAG "T003"
+#define FW_TEST_TAG "T004"
 #ifndef FW_TEST_TAG
 	#define FW_TEST_TAG ""
 #endif
