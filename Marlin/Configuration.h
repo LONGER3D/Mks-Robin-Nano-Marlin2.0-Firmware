@@ -176,7 +176,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_LONGER_LGT_KIT_V2_0
+  #define MOTHERBOARD BOARD_MKS_ROBIN_E3_V1_1
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu

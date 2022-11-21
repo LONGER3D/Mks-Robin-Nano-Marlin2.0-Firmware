@@ -47,7 +47,9 @@
 //
 // Servos
 //
-#define SERVO0_PIN                          PA3
+#if HAS_Z_SERVO_PROBE
+  #define SERVO0_PIN                          PA3
+#endif
 
 //
 // Limit Switches
@@ -55,7 +57,8 @@
 #define X_STOP_PIN                          PA12
 #define Y_STOP_PIN                          PA11
 #define Z_MIN_PIN                           PC6
-#define Z_MAX_PIN                           PB1
+// #define Z_MAX_PIN                           PB1
+#define Z_MIN_PROBE_PIN                     PB1   // BLTouch IN
 
 //
 // Steppers
@@ -114,6 +117,10 @@
 #define HEATER_0_PIN                        PC9
 #define FAN_PIN                             PA8
 #define HEATER_BED_PIN                      PC8
+
+#define FAN_SOFT_PWM                        
+#define FAN_MIN_PWM                         80
+#define FAN_MAX_PWM                         255
 
 //
 // Temperature Sensors
