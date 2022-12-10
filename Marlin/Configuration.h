@@ -74,7 +74,7 @@
 #define LGT // comment to remove all code snippets from LGT(Longer 3D Technology)
 
 #if ENABLED(LGT)
-  #define LGT_LCD_DW    // DWIN 4.3 inch LCD serial touch screen
+  // #define LGT_LCD_DW    // DWIN 4.3 inch LCD serial touch screen
 #endif
 
 // select printer model
@@ -1558,7 +1558,7 @@
   // Commands to execute on filament runout.
   // With multiple runout sensors use the %c placeholder for the current tool in commands (e.g., "M600 T%c")
   // NOTE: After 'M412 H1' the host handles filament runout and this script does not apply.
-  #if ENABLED(LGT_LCD_DW)
+  #if 1//ENABLED(LGT_LCD_DW)
     #define FILAMENT_RUNOUT_SCRIPT "M25\nM2003"
   #else
     #define FILAMENT_RUNOUT_SCRIPT "M600"
