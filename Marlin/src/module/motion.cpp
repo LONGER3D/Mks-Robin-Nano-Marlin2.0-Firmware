@@ -2100,7 +2100,7 @@ void set_axis_is_at_home(const AxisEnum axis) {
    */
   #if HAS_BED_PROBE && Z_HOME_TO_MIN
     if (axis == Z_AXIS) {
-      #if HOMING_Z_WITH_PROBE || ENABLED(LK4X)
+      #if HOMING_Z_WITH_PROBE || ENABLED(LK4X) || ENABLED(LK5_PRO)
 
         current_position.z -= probe.offset.z;
 

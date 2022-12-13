@@ -143,7 +143,7 @@
   #define MT_DET_1_PIN                      PA4   // MT_DET
   #define MT_DET_2_PIN                      PE6
   #define MT_DET_PIN_STATE                  LOW
-#endif
+#endif  
 
 #if defined(LK4X)
   #define MT_DET_1_PIN                      PA4

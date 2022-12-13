@@ -78,7 +78,8 @@
 #endif
 
 // select printer model
-#define LK4X
+// #define LK4X
+#define LK5_PRO
 
 // uncomment to use z probe(BL-TOUCH/3D-TOUCH)
 #define WITH_Z_PROBE
@@ -637,10 +638,14 @@
     #define DEFAULT_Kp_LIST {  22.20,  22.20 }
     #define DEFAULT_Ki_LIST {   1.08,   1.08 }
     #define DEFAULT_Kd_LIST { 114.00, 114.00 }
-  #else
+  #elif ENABLED(LK4X)
     #define DEFAULT_Kp  17.22
     #define DEFAULT_Ki   1.00
     #define DEFAULT_Kd  74.22
+  #elif ENABLED(LK5_PRO)
+    #define DEFAULT_Kp  28.44
+    #define DEFAULT_Ki  2.41
+    #define DEFAULT_Kd  83.88
   #endif
 #endif // PIDTEMP
 
@@ -680,10 +685,14 @@
   // 120V 250W silicone heater into 4mm borosilicate (MendelMax 1.5+)
   // from FOPDT model - kp=.39 Tp=405 Tdead=66, Tc set to 79.2, aggressive factor of .15 (vs .1, 1, 10)
   #if ENABLED(LK4X)
-    //From M303 command for Alfawise U30 :
     #define DEFAULT_bedKp 338.46
     #define DEFAULT_bedKi 63.96
     #define DEFAULT_bedKd 447.78
+  #elif ENABLED(LK5_PRO)
+    // send "M303 E-1 S80 C8" command to get PID.
+    #define DEFAULT_bedKp 174.64
+    #define DEFAULT_bedKi 27.33
+    #define DEFAULT_bedKd 743.95
   #else
     #define DEFAULT_bedKp 10.00
     #define DEFAULT_bedKi .023
@@ -763,7 +772,7 @@
  */
 #define PREVENT_LENGTHY_EXTRUDE
 
-#if ENABLED(LK4X)
+#if ANY(LK4X, LK5_PRO)
   #define EXTRUDE_MAXLENGTH 600
 #else
   #define EXTRUDE_MAXLENGTH 200
@@ -978,6 +987,8 @@
  */
 #if ENABLED(LK4X)
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 719.03 }
+#elif ENABLED(LK5_PRO)
+  #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 98 }
 #else
   #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 1600, 400 }
 #endif
@@ -986,7 +997,7 @@
  * Override with M203
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#if ENABLED(LK4X)
+#if ANY(LK4X, LK5_PRO)
   #define DEFAULT_MAX_FEEDRATE          { 250, 250, 5, 25 }
 #else
   #define DEFAULT_MAX_FEEDRATE          { 300, 300, 5, 25 }
@@ -1003,7 +1014,7 @@
  * Override with M201
  *                                      X, Y, Z [, I [, J [, K]]], E0 [, E1[, E2...]]
  */
-#if ENABLED(LK4X)
+#if ANY(LK4X, LK5_PRO)
   #define DEFAULT_MAX_ACCELERATION      { 500, 500, 100, 3000 }
 #else
   #define DEFAULT_MAX_ACCELERATION      { 200, 200, 50, 500 }
@@ -1440,6 +1451,9 @@
 #if ENABLED(LK4X)
   #define X_BED_SIZE 265
   #define Y_BED_SIZE 220
+#elif ENABLED(LK5_PRO)
+  #define X_BED_SIZE 300
+  #define Y_BED_SIZE 300
 #else
   #define X_BED_SIZE 200
   #define Y_BED_SIZE 200
@@ -1453,6 +1467,8 @@
 
 #if ENABLED(LK4X)
   #define Z_MAX_POS 250
+#elif ENABLED(LK5_PRO)
+  #define Z_MAX_POS 400
 #else
   #define Z_MAX_POS 200
 #endif
@@ -1824,12 +1840,17 @@
 #endif
 
 #if ENABLED(Z_SAFE_HOMING)
-  #define Z_SAFE_HOMING_X_POINT 114 // X_CENTER  // X point for Z homing
-  #define Z_SAFE_HOMING_Y_POINT 114 // Y_CENTER  // Y point for Z homing
+  #if ENABLED(LK4X)
+    #define Z_SAFE_HOMING_X_POINT 114 // X_CENTER  // X point for Z homing
+    #define Z_SAFE_HOMING_Y_POINT 114 // Y_CENTER  // Y point for Z homing
+  #elif ENABLED(LK5_PRO)
+    #define Z_SAFE_HOMING_X_POINT 150 // X_CENTER  // X point for Z homing
+    #define Z_SAFE_HOMING_Y_POINT 150 // Y_CENTER  // Y point for Z homing
+  #endif
 #endif
 
 // Homing speeds (mm/min)
-#if ENABLED(LK4X)
+#if ANY(LK4X, LK5_PRO)
   #define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (4*60) }
 #else
   #define HOMING_FEEDRATE_MM_M { (50*60), (50*60), (4*60) }

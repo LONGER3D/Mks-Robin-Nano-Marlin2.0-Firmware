@@ -3,10 +3,10 @@
 #if ENABLED(LGT_LCD_DW)
 
 #define RECOVER_E_ADD 4//8
-#ifdef LK4X
+#if defined(LK4X)
 	#define LOAD_FILA_LEN 100
 	#define UNLOAD_FILA_LEN -100
-#else
+#elif defined(LK5_PRO)
 	#define LOAD_FILA_LEN 500
 	#define UNLOAD_FILA_LEN -500
 #endif // LK4X
@@ -91,7 +91,7 @@
 	#define FILAMENT_RUNOUT_MOVE_X 10
 	#define FILAMENT_RUNOUT_MOVE_Y 260
 	#define FILAMENT_RUNOUT_MOVE_F 50
-#elif defined(LK5_PRO)// LK4 PRO
+#elif defined(LK4_PRO)// LK4 PRO
 	#define MAC_MODEL       "LK4 Pro"
 	#define MAC_SIZE "220*220*250(mm)"
 	//#define FILAMENT_RUNOUT_MOVE "G1 X10 Y200 F3000"
