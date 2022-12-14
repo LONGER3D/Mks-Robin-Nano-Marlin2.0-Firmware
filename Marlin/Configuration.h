@@ -1256,7 +1256,11 @@
  *     |    [-]    |
  *     O-- FRONT --+
  */
-#define NOZZLE_TO_PROBE_OFFSET { -50, -5, 0 }
+#if ENABLED(LK4X)
+  #define NOZZLE_TO_PROBE_OFFSET { -50, -5, 0 }
+#elif ENABLED(LK5_PRO)
+  #define NOZZLE_TO_PROBE_OFFSET  { -52, -16, 0 } // for dual blowers. Use values { -36, -10, 0 } if using sigle blower
+#endif
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -1400,9 +1404,16 @@
 // @section machine
 
 // Invert the stepper direction. Change (or reverse the motor connector) if an axis goes the wrong way.
-#define INVERT_X_DIR false
-#define INVERT_Y_DIR false
-#define INVERT_Z_DIR true
+#if ENABLED(LK4X)
+  #define INVERT_X_DIR false
+  #define INVERT_Y_DIR false
+  #define INVERT_Z_DIR true
+#elif ENABLED(LK5_PRO)
+  #define INVERT_X_DIR true
+  #define INVERT_Y_DIR false
+  #define INVERT_Z_DIR true
+#endif
+
 //#define INVERT_I_DIR false
 //#define INVERT_J_DIR false
 //#define INVERT_K_DIR false
@@ -1532,7 +1543,12 @@
   #define FIL_RUNOUT_ENABLED_DEFAULT true // Enable the sensor on startup. Override with M412 followed by M500.
   #define NUM_RUNOUT_SENSORS   1          // Number of sensors, up to one per extruder. Define a FIL_RUNOUT#_PIN for each.
 
-  #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
+  #if ENABLED(LK4X)
+    #define FIL_RUNOUT_STATE     LOW        // Pin state indicating that filament is NOT present.
+  #elif ENABLED(LK5_PRO)
+    #define FIL_RUNOUT_STATE     HIGH        // Pin state indicating that filament is NOT present.
+  #endif
+
   // #define FIL_RUNOUT_PULLUP               // Use internal pullup for filament runout pins.
   //#define FIL_RUNOUT_PULLDOWN           // Use internal pulldown for filament runout pins.
   //#define WATCH_ALL_RUNOUT_SENSORS      // Execute runout script on any triggering sensor, not only for the active extruder.
