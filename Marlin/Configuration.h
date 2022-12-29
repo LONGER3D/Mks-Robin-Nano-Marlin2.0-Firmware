@@ -78,8 +78,8 @@
 #endif
 
 // select printer model
-// #define LK4X
-#define LK5_PRO
+#define LK4X
+// #define LK5_PRO
 
 // uncomment to use z probe(BL-TOUCH/3D-TOUCH)
 #define WITH_Z_PROBE
