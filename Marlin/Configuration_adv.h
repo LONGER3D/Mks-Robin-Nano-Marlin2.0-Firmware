@@ -2694,7 +2694,7 @@
    
     #if ENABLED(LK5_PRO)
       #define E0_CURRENT      1200
-    #else if ENABLED(LK4X)
+    #elif ENABLED(LK4X)
       #define E0_CURRENT      1000    
     #endif
 
