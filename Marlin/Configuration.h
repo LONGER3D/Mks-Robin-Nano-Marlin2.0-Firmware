@@ -78,14 +78,14 @@
 #endif
 
 // select printer model
-#define LK4X
-// #define LK5_PRO
+// #define LK4X
+#define LK5_PRO
 
 // uncomment to use z probe(BL-TOUCH/3D-TOUCH)
-#define WITH_Z_PROBE
+// #define WITH_Z_PROBE
 
 // test version label
-#define FW_TEST_TAG "E3T005"
+#define FW_TEST_TAG "E3T006"
 #ifndef FW_TEST_TAG
 	#define FW_TEST_TAG ""
 #endif
@@ -889,7 +889,13 @@
 // Mechanical endstop with COM to ground and NC to Signal uses "false" here (most common setup).
 #define X_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
 #define Y_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
-#define Z_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+
+#if ENABLED(WITH_Z_PROBE)
+  #define Z_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
+#else
+  #define Z_MIN_ENDSTOP_INVERTING true // Set to true to invert the logic of the endstop.
+#endif
+
 #define I_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define J_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
 #define K_MIN_ENDSTOP_INVERTING false // Set to true to invert the logic of the endstop.
@@ -1101,7 +1107,9 @@
  * The probe replaces the Z-MIN endstop and is used for Z homing.
  * (Automatically enables USE_PROBE_FOR_Z_HOMING.)
  */
-#define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+#if ENABLED(WITH_Z_PROBE)
+  #define Z_MIN_PROBE_USES_Z_MIN_ENDSTOP_PIN
+#endif
 
 // Force the use of the probe for Z-axis homing
 #if ENABLED(WITH_Z_PROBE)

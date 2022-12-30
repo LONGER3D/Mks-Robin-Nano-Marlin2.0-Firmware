@@ -58,7 +58,7 @@
 #define Y_STOP_PIN                          PA11
 #define Z_MIN_PIN                           PC6
 // #define Z_MAX_PIN                           PB1
-// #define Z_MIN_PROBE_PIN                     PB1   // BLTouch IN
+#define Z_MIN_PROBE_PIN                     PC1   // pseudo probe pin for babystep with probe
 
 //
 // Steppers
