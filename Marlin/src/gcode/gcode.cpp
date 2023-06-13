@@ -1077,6 +1077,9 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 2007: M2007(); break;
         case 2008: M2008(); break;
         case 2009: M2009(); break;
+
+        // for production
+        case 2020: M2020(); break;
       #endif
 
       default: parser.unknown_command_warning(); break;

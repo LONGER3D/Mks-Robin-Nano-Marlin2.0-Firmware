@@ -123,5 +123,29 @@
     lgtLcdDw.LGT_Change_Page(ID_DIALOG_LEVEL_FINISH);
   }
 
+
+// for production clear printing time
+  void GcodeSuite::M2020()
+  {
+    void eeprom_write_dword (uint32_t *pos, uint32_t value);
+    uint32_t eeprom_read_dword (const uint32_t *pos);
+    
+    if (parser.seenval('S')) {     // set
+      const uint32_t value = parser.value_ulong();
+      eeprom_write_dword((uint32_t*)EEPROM_INDEX, value);
+    } else if (parser.seen('C')) { // clear
+      eeprom_write_dword((uint32_t*)EEPROM_INDEX, 0);
+    } else {  // report(read)
+      uint32_t value = eeprom_read_dword((const uint32_t*)EEPROM_INDEX);
+      MSerial1.print("print total time: ");
+      MSerial1.println(value);
+    }
+
+    DEBUG_ECHOLNPGM("run M2020");
+
+  }
+
+
+
 #endif // LGT_LCD_DW
 

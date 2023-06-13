@@ -109,7 +109,7 @@ char leveling_sta = 0; // for leveling menu
 
 // #define MYSERIAL1 customizedSerial2//MSerial2
 
-static void eeprom_write_dword (uint32_t *pos, uint32_t value)
+void eeprom_write_dword (uint32_t *pos, uint32_t value)
 {
   int size = sizeof(uint32_t);
   uint8_t *p = (uint8_t *)pos;
@@ -123,7 +123,7 @@ static void eeprom_write_dword (uint32_t *pos, uint32_t value)
 
 }
 
-static uint32_t eeprom_read_dword (const uint32_t *pos) 
+uint32_t eeprom_read_dword (const uint32_t *pos) 
 {
   int size = sizeof(uint32_t);
   uint32_t value;

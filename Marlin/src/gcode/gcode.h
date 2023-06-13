@@ -1198,6 +1198,8 @@ private:
     static void M2007();
     static void M2008();
     static void M2009();
+    
+    static void M2020();
   #endif
 
   static void T(const int8_t tool_index);
