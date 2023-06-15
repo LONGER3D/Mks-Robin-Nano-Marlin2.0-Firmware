@@ -85,7 +85,7 @@
 // #define WITH_Z_PROBE
 
 // test version label
-// #define FW_TEST_TAG "E3T006"
+#define FW_TEST_TAG "T001"
 #ifndef FW_TEST_TAG
 	#define FW_TEST_TAG ""
 #endif
@@ -97,7 +97,7 @@
   #define FW_BL_TAG ""
 #endif
 
-#define SHORT_BUILD_VERSION       "1.0.3" FW_TEST_TAG "-Marlin2.x" FW_BL_TAG
+#define SHORT_BUILD_VERSION       "1.0.3E3" FW_TEST_TAG "-Marlin2.x" FW_BL_TAG
 
 #define DEFAULT_MACHINE_NAME      "LONGER 3D Printer"   // override by  CUSTOM_MACHINE_NAME if any
 #define SOURCE_CODE_URL           "https://github.com/LONGER3D"
@@ -177,7 +177,7 @@
 
 // Choose the name from boards.h that matches your setup
 #ifndef MOTHERBOARD
-  #define MOTHERBOARD BOARD_MKS_ROBIN_E3_V1_1
+  #define MOTHERBOARD BOARD_MKS_ROBIN_E3
 #endif
 
 // Name displayed in the LCD "Ready" message and Info menu
