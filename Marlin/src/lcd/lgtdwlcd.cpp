@@ -47,8 +47,8 @@
 #define DEBUG_PRINT_P 				DEBUG_ECHO
 #define DEBUG_ECHOPAIR(k, v) 		do {DEBUG_ECHO(k); DEBUG_ECHO(v);} while(0)
 
-#define eeprom_write_dword(x, y) (void(0))
-#define eeprom_read_dword(x) (0)
+// #define eeprom_write_dword(x, y) (void(0))
+// #define eeprom_read_dword(x) (0)
 
 #define startFileprint startOrResumeFilePrinting
 
@@ -108,7 +108,7 @@ bool check_recovery = false; // for recovery dialog
 char leveling_sta = 0; // for leveling menu
 
 // #define MYSERIAL1 customizedSerial2//MSerial2
-#if 0
+#if 1
 void eeprom_write_dword (uint32_t *pos, uint32_t value)
 {
   int size = sizeof(uint32_t);
@@ -639,7 +639,7 @@ void LGT_SCR_DW::LGT_Printer_Data_Updata()
 
 void LGT_SCR_DW::LGT_DW_Setup()
 {
-	#if 0
+	#if 1
 		if (eeprom_read_byte((uint8_t*)(EEPROM_INDEX + 5)) != 0)
 		{
 			eeprom_write_dword((uint32_t*)EEPROM_INDEX, 0);

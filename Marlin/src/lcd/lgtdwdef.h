@@ -22,7 +22,7 @@
 #define DATA_SIZE 37    //the size of ScreenData and Receive_Cmd
 #define FILE_LIST_NUM  25
 
-#define EEPROM_INDEX 2000
+#define EEPROM_INDEX 2000	// must confirm marlin setting is no more than 2000 size
 
 //Printer kill reason
 #define E_TEMP_ERROR		"Error 0: abnormal E temp"   //Heating failed
