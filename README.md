@@ -1,3 +1,6 @@
+# Reminding
+Only suitable for LONGER LK5PRO with MKS-ROBIN-E3-V1.1 board.
+
 # Mks-Robin-Nano-Marlin2.0-Firmware
 
 ## Features
