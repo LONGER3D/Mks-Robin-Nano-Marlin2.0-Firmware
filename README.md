@@ -1,6 +1,9 @@
 # Reminding
 Only suitable for LONGER LK5PRO with MKS-ROBIN-E3-V1.1 board.
 
+uncomment below in "Configuration.h" to enable z probe(BL-TOUCH/3D-TOUCH)
+// #define WITH_Z_PROBE
+
 # Mks-Robin-Nano-Marlin2.0-Firmware
 
 ## Features
